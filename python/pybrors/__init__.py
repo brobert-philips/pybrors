@@ -1,6 +1,7 @@
 # Declare all submodules, classes and methods from pybro.utils submodule
 __all__ = [
     "sum_as_string",
+    "utils",
 ]
 
 # Import all classes and methods from pybro.utils submodule
