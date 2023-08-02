@@ -15,52 +15,40 @@ class GenericFile:
     """
     Represents a generic file.
 
-    Attributes:
-        file_path (str):
-            The absolute path of the file.
-        file_name (str):
-            The name of the file.
-        file_ext (str):
-            The extension of the file.
-        file_dir (str):
-            The directory containing the file.
-
-    Methods:
-        __init__(self, file_path: str = None) -> None:
-            Initializes a GenericFile object.
-
-        __str__(self) -> str:
-            Converts the object to a string representation.
-
-        __eq__(self, __value: object) -> bool:
-            Checks if the current object is equal to the given object
-            based on their file paths.
-
-        @staticmethod
-        test_file(file_path: str = None) -> bool:
-            Checks if a file exists and if it is readable and writable.
-
-        @staticmethod
-        dialog_select_file(dir_path: str = os.getcwd(), func: str =
-        "open", opt: str = "All files (*.*)") -> str:
-            Displays a dialog box for selecting a file.
+    Attributes
+    ----------
+    FILE_TYPES : dict[str, str]
+        The supported file extensions and their descriptions.
+    file_path : str
+        The absolute path of the file.
+    file_name : str
+        The name of the file.
+    file_ext : str
+        The extension of the file.
+    file_dir : str
+        The directory containing the file.
     """
 
     FILE_TYPES = {
         "*": "All files",
     }
+    """Supported file extensions."""
 
 
     def __init__(self, file_path: str = None) -> None:
         """
         Initializes a GenericFile object.
 
-        Parameters:
-            file_path (str): The absolute path of the file. If not
-                provided, a file selection dialog will be displayed.
+        Parameters
+        ----------
+        file_path : str
+            The absolute path of the file. If not provided, a file
+            selection dialog will be displayed.
 
-        Raises:
-            FileNotFoundError: If the file path is invalid or the file is not supported.
+        Raises
+        ------
+        FileNotFoundError
+            If the file path is invalid or the file is not supported.
         """        # Select file if not provided
         if file_path is None:
             # Build file types dict
@@ -88,10 +76,8 @@ class GenericFile:
         """
         Convert the object to a string representation.
 
-        Parameters:
-            None
-
-        Returns:
+        Returns
+        -------
             str: The string representation of the object.
         """
         # Build the string
@@ -108,11 +94,15 @@ class GenericFile:
         Check if the current object is equal to the given object based
         on their file paths.
 
-        Parameters:
-            __value (object): The object to compare with.
+        Parameters
+        ----------
+        __value : object
+            The object to compare with.
 
-        Returns:
-            bool: True if the file paths are equal, False otherwise.
+        Returns
+        -------
+        bool
+            True if the file paths are equal, False otherwise.
         """
         return self.file_path == __value.file_path
 
@@ -122,11 +112,15 @@ class GenericFile:
         """
         Check if a file exists and if it is readable and writable.
 
-        Parameters:
-            file_path (str): The path to the file to be checked.
+        Parameters
+        ----------
+        file_path : str
+            The path to the file to be checked.
 
-        Returns:
-            bool: True if the file exists and is readable and writable,
+        Returns
+        -------
+        bool
+            True if the file exists and is readable and writable,
             False otherwise.
         """
         # Check file path and reformat it
@@ -161,22 +155,31 @@ class GenericFile:
         A static method that displays a dialog box for selecting a
         file.
 
-        Parameters:
-            dir_path (str): The directory path to start the dialog box
-                again. Defaults to the current working directory.
-            func (str): The function to perform with the selected file.
-                Must be either "open" or "save". Defaults to "open".
-            opt (str): The file filter for the dialog box. Defaults to
-                "All files (*.*)".
+        Parameters
+        ----------
+        dir_path : str
+            The directory path to start the dialog box
+            again. Defaults to the current working directory.
+        func : str
+            The function to perform with the selected file.
+            Must be either "open" or "save". Defaults to "open".
+        opt : str
+            The file filter for the dialog box. Defaults to
+            "All files (*.*)".
 
-        Returns:
-            str: The path of the selected file.
+        Returns
+        -------
+        str
+            The path of the selected file.
 
-        Raises:
-            FileNotFoundError: If the provided directory path is not
-                invalid.
-            ValueError: If the provided function parameter is not
-                "open" or "save".
+        Raises
+        ------
+        FileNotFoundError
+            If the provided directory path is not
+            invalid.
+        ValueError
+            If the provided function parameter is not
+            "open" or "save".
         """
         # Initialize method variables
         qt_app  = QApplication([])
@@ -218,27 +221,14 @@ class GenericDir:
     """
     Represents a directory.
 
-    Parameters:
-        dir_path (str, optional): The path of the directory. If not
-            provided, a dialog box will prompt the user to select a
-            directory.
-        file_class (object, optional): The class used to test if a file
-            is valid. Defaults to GenericFile.
-
-    Attributes:
-        dir_path (str): The path of the directory.
-        file_class (object): The class used to test if a file is valid.
-        file_list (list[str]): A list of file paths in the directory.
-
-    Methods:
-        __init__: Initializes the GenericDir class.
-        __str__: Returns a string representation of the object.
-        __eq__: Checks if the given value is equal to the current
-            instance.
-        test_dir: Checks if the given directory path is valid and
-            accessible.
-        dialog_select_dir: Selects a directory using a dialog box.
-        list_files: Lists all files in a directory.
+    Attributes
+    ----------
+    dir_path : str
+        The path of the directory.
+    file_class : object
+        The class used to test if a file is valid.
+    file_list : list[str]
+        A list of file paths in the directory.
     """
 
     def __init__(
@@ -249,12 +239,15 @@ class GenericDir:
         """
         Initializes a new instance of the class.
 
-        Parameters:
-            dir_path (str, optional): The directory path to operate on.
-                If not  provided, a dialog box is shown to select a
-                directory. Defaults to None.
-            file_class (object, optional): The class of files to be
-                processed. Defaults to GenericFile.
+        Parameters
+        ----------
+        dir_path : str
+            The directory path to operate on.
+            If not  provided, a dialog box is shown to select a
+            directory. Defaults to None.
+        file_class : object
+            The class of files to be
+            processed. Defaults to GenericFile.
         """
         # Select directory path if not provided
         if dir_path is None:
@@ -283,11 +276,15 @@ class GenericDir:
         """
         Returns a string representation of the object.
 
-        Parameters:
-            self (object): The object itself.
+        Parameters
+        ----------
+        self : object
+            The object itself.
 
-        Returns:
-            str: The string representation of the object.
+        Returns
+        -------
+        str
+            The string representation of the object.
         """
         # Build the string
         class_name  = self.__class__.__name__
@@ -302,13 +299,17 @@ class GenericDir:
         """
         Check if the given value is equal to the current instance.
 
-        Parameters:
-            __value (object): The value to compare with the current
-                instance.
+        Parameters
+        ----------
+        __value : object
+            The value to compare with the current
+            instance.
 
-        Returns:
-            bool: True if the value is equal to the current instance,
-                False otherwise.
+        Returns
+        -------
+        bool
+            True if the value is equal to the current instance,
+            False otherwise.
         """
         # Check if __value is a GenericDir instance
         if not isinstance(__value, GenericDir):
@@ -324,12 +325,16 @@ class GenericDir:
         """
         Check if the given directory path is valid and accessible.
 
-        Parameters:
-            dir_path (str): The directory path to be checked.
+        Parameters
+        ----------
+        dir_path : str
+            The directory path to be checked.
 
-        Returns:
-            bool: True if the directory path is valid and accessible,
-                False otherwise.
+        Returns
+        -------
+        bool
+            True if the directory path is valid and accessible,
+            False otherwise.
         """
         # Check directory path and reformat it
         if dir_path is None:
@@ -361,13 +366,17 @@ class GenericDir:
         """
         Selects a directory using a dialog box.
 
-        Parameters:
-            dir_path (str): The initial directory path to be displayed
-                in the dialog box. Defaults to the current working
-                directory.
+        Parameters
+        ----------
+        dir_path : str
+            The initial directory path to be displayed
+            in the dialog box. Defaults to the current working
+            directory.
 
-        Returns:
-            str: The path of the selected directory.
+        Returns
+        -------
+        str
+            The path of the selected directory.
         """
         # Initialize method variables
         qt_app  = QApplication([])
@@ -395,15 +404,21 @@ class GenericDir:
         """
         List all files in a directory.
 
-        Parameters:
-            dir_path (str): The directory path.
-            recur (bool): Flag indicating whether to recursively search
-                subdirectories. Defaults to False.
-            file_class (object): The class used to test if a file is valid.
-                Defaults to GenericFile.
+        Parameters
+        ----------
+        dir_path : str
+            The directory path.
+        recur : bool
+            Flag indicating whether to recursively search
+            subdirectories. Defaults to False.
+        file_class : object
+            The class used to test if a file is valid.
+            Defaults to GenericFile.
 
-        Returns:
-            list[str]: A list of file paths.
+        Returns
+        -------
+        list[str]
+            A list of file paths.
         """
         # Initialize method variables
         filelist = []
