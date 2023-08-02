@@ -1,11 +1,14 @@
 """
 File: utils/files.py
 """
+
 # Import packages and submodules
 import os
 
 # Import classes and methods
 from PyQt6.QtWidgets import QApplication, QFileDialog
+
+
 
 
 class GenericFile:
@@ -275,6 +278,7 @@ class GenericDir:
             file_class = self.file_class
         )
 
+
     def __str__(self) -> str:
         """
         Returns a string representation of the object.
@@ -314,6 +318,7 @@ class GenericDir:
         tmp_test = self.dir_path == __value.dir_path
         return tmp_test and (self.file_class == __value.file_class)
 
+
     @staticmethod
     def test_dir(dir_path: str):
         """
@@ -350,6 +355,7 @@ class GenericDir:
 
         return True
 
+
     @staticmethod
     def dialog_select_dir(dir_path: str = os.getcwd()) -> str:
         """
@@ -378,6 +384,7 @@ class GenericDir:
         qt_app.closeAllWindows()
         # logger.info("Directory %s was selected.", path)
         return path
+
 
     @staticmethod
     def list_files(

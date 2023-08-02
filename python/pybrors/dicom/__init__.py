@@ -1,12 +1,12 @@
 """
-File: utils/__init__.py
+File: dicom/__init__.py
 """
 
 # Declare all submodules, classes and methods from pybro.utils submodule
 __all__ = [
-    "GenericDir", "GenericFile",
+    "DicomFile", "DicomDir",
 ]
 
 
 # Import all classes and methods from pybro.utils submodule
-from .files import GenericDir, GenericFile
+from .files import DicomDir, DicomFile

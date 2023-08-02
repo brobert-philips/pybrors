@@ -1,3 +1,7 @@
+"""
+File: tests/test_dicom.py
+"""
+
 # Import packages and submodules
 
 # Import classes and methods
