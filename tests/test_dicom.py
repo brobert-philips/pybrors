@@ -70,4 +70,8 @@ def test_dicom_file():
     print(tmp.dataset["PatientName"])
 
 
-# def test_dicom_dir():
+def test_dicom_dir():
+    # Create file instance
+    tmp = DicomDir(dir_path="exts/data/dicom")
+    print(tmp)
+    print(tmp.dicom_df)

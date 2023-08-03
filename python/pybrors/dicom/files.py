@@ -12,15 +12,14 @@ import re
 from datetime import datetime
 
 # Import packages and submodules
+import pandas
 import pydicom
 
 # Import classes and methods
 from pybrors.utils import GenericFile, GenericDir
 
 
-
-
-CLEAR_TAGS = [
+TAGS_CLEARED = [
     "InstitutionName",
     "InstitutionAddress",
     "ReferringPhysicianName",
@@ -50,6 +49,27 @@ CLEAR_TAGS = [
     "ContentSequence",
 ]
 """Constant containing all cleared DICOM tags."""
+
+TAGS_DATAFRAME = [
+    "ImageType",
+    "InstanceCreationDate",
+    "StudyDate",
+    "SeriesDate",
+    "AcquisitionDate",
+    "ContentDate",
+    "AccessionNumber",
+    "Modality",
+    "StationName",
+    "PatientName",
+    "PatientID",
+    "PatientBirthDate",
+    "SeriesInstanceUID",
+    "StudyID",
+    "InstanceNumber",
+]
+"""Constant containing all cleared DICOM tags."""
+
+
 
 
 class DicomFile(GenericFile):
@@ -202,6 +222,30 @@ class DicomFile(GenericFile):
         return True
 
 
+    def get_dicom_info(self) -> dict:
+        """
+        Generate a dictionary containing DICOM information.
+
+        This function iterates through the TAGS_DATAFRAME list and
+        checks if each tag is present in the dataset. If the tag is
+        present, the corresponding value is added to the dictionary. If
+        the tag is not present, the value "UNK" is added to the
+        dictionary.
+
+        Returns
+        -------
+        dict
+            A dictionary containing DICOM information.
+        """
+        dicom_info = {}
+        for tag in TAGS_DATAFRAME:
+            if tag in self.dataset:
+                dicom_info[tag] = self.dataset[tag].value
+            else:
+                dicom_info[tag] = "UNK"
+
+        return dicom_info
+
     def _anonymize_dataset(self) -> (bool, pydicom.dataset.FileDataset):
         """
         Anonymize DICOM dataset.
@@ -265,7 +309,7 @@ class DicomFile(GenericFile):
                 print("DICOM dataset has no %s tag.", tag)
 
         # Delete tags
-        for tag in CLEAR_TAGS:
+        for tag in TAGS_CLEARED:
             # Check if tag exists in DICOM dataset
             if tag in dataset:
                 print("Clear tag %s.", tag)
@@ -305,3 +349,28 @@ class DicomDir(GenericDir):
         """
         # Initialize parent attributes
         super().__init__(dir_path, DicomFile)
+
+        # Delete all anonymized files and remove them from files list
+        anonymized_files = [file for file in self.file_list if "anonymized" in file]
+        self.file_list   = [file for file in self.file_list if "anonymized" not in file]
+        for file in anonymized_files:
+            os.remove(file)
+
+        # Build files DataFrame
+        self.dicom_df = pandas.DataFrame(columns=TAGS_DATAFRAME)
+        for file in self.file_list:
+            try:
+                dicom_file = DicomFile(file)
+                dicom_info = dicom_file.get_dicom_info()
+                dicom_info["path"] = file
+                self.dicom_df = pandas.concat(
+                    [self.dicom_df, pandas.DataFrame([dicom_info])],
+                    ignore_index=True
+                )
+            except FileNotFoundError:
+                print("File %s does not exist.", file)
+
+        # Extract list of not supported files
+        non_dicom_files = self.file_list
+        self.file_list  = list(self.dicom_df.path)
+        non_dicom_files = list(set(non_dicom_files) - set(self.file_list))
