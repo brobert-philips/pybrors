@@ -3,6 +3,7 @@ File: dicom/files.py
 """
 
 # Import packages and submodules
+import copy
 import os
 import platform
 import re
@@ -166,22 +167,23 @@ class DicomFile(GenericFile):
         new_path = os.path.abspath(new_path)
 
         # Anonymize DICOM dataset
-        if not self._anonymize_dataset():
+        anonym_status, anonym_dataset = self._anonymize_dataset()
+        if not anonym_status:
             print("Dataset could not be anonymized.")
             return False
 
         # Build anonymized file name if new_path is a directory
         if GenericDir.test_dir(new_path):
             # Extract DICOM tags
-            pid        = self.dataset["PatientID"].value
-            acc_num    = self.dataset["AccessionNumber"].value
-            series_uid = self.dataset["SeriesInstanceUID"].value
-            modality   = self.dataset["Modality"].value
-            inst_num   = self.dataset["InstanceNumber"].value
+            pid        = anonym_dataset["PatientID"].value
+            acc_num    = anonym_dataset["AccessionNumber"].value
+            series_uid = anonym_dataset["SeriesInstanceUID"].value
+            modality   = anonym_dataset["Modality"].value
+            inst_num   = anonym_dataset["InstanceNumber"].value
 
             # Extract ImageType
-            if "ImageType" in self.dataset:
-                img_type = self.dataset["ImageType"].value
+            if "ImageType" in anonym_dataset:
+                img_type = anonym_dataset["ImageType"].value
                 img_type = img_type[2] if len(img_type) > 2 else "UNK"
             else:
                 img_type = "UNK"
@@ -195,24 +197,28 @@ class DicomFile(GenericFile):
         if not os.path.exists(os.path.dirname(new_path)):
             os.makedirs(os.path.dirname(new_path))
 
-        self.dataset.save_as(new_path)
+        # Save anonymized file
+        anonym_dataset.save_as(new_path)
         return True
 
 
-    def _anonymize_dataset(self) -> bool:
+    def _anonymize_dataset(self) -> (bool, pydicom.dataset.FileDataset):
         """
         Anonymize DICOM dataset.
 
         Returns
         -------
+        bool
+            True if anonymized, False otherwise.
         pydicom.Dataset
             Anonymized DICOM dataset.
         """
         # Retrieve DICOM tags
-        serial_num   = self.dataset["DeviceSerialNumber"].value
-        study_date   = self.dataset["StudyDate"].value
-        study_time   = self.dataset["StudyTime"].value
-        study_uid    = self.dataset["StudyInstanceUID"].value
+        dataset      = copy.deepcopy(self.dataset)
+        serial_num   = dataset["DeviceSerialNumber"].value
+        study_date   = dataset["StudyDate"].value
+        study_time   = dataset["StudyTime"].value
+        study_uid    = dataset["StudyInstanceUID"].value
 
         # Reformat study_uid
         study_uid = study_uid.replace(".","+")
@@ -227,7 +233,7 @@ class DicomFile(GenericFile):
         new_pid        = serial_num + study_date[2:] + study_time[:4]
         new_pid        = str(hex(int(new_pid))).upper()[2:]
         new_study_date = study_date[:-4] + "0101"
-        new_birth_date = self.dataset["PatientBirthDate"].value
+        new_birth_date = dataset["PatientBirthDate"].value
         new_birth_date = new_birth_date[:-4] + "0101"
         new_station    = platform.node().upper()
 
@@ -252,23 +258,23 @@ class DicomFile(GenericFile):
         ]
         for tag, value in zip(tags, values):
             # Check if tag exists in DICOM dataset
-            if tag in self.dataset:
+            if tag in dataset:
                 print("Set tag %s to %s.", tag, value)
-                self.dataset[tag].value = value
+                dataset[tag].value = value
             else:
                 print("DICOM dataset has no %s tag.", tag)
 
         # Delete tags
         for tag in CLEAR_TAGS:
             # Check if tag exists in DICOM dataset
-            if tag in self.dataset:
+            if tag in dataset:
                 print("Clear tag %s.", tag)
-                self.dataset[tag].clear()
+                dataset[tag].clear()
 
             else:
                 print("DICOM dataset has no %s tag.", tag)
 
-        return True
+        return True, dataset
 
 
 
