@@ -258,10 +258,16 @@ class DicomFile(GenericFile):
         """
         # Retrieve DICOM tags
         dataset      = copy.deepcopy(self.dataset)
-        serial_num   = dataset["DeviceSerialNumber"].value
         study_date   = dataset["StudyDate"].value
         study_time   = dataset["StudyTime"].value
         study_uid    = dataset["StudyInstanceUID"].value
+
+        # Get DeviceSerialNumber
+        if "DeviceSerialNumber" not in dataset:
+            print(self.file_path)
+            print(f"Set DeviceSerialNumber to {datetime.today().strftime('%Y%m%d')}.")
+            dataset.DeviceSerialNumber = datetime.today().strftime("%Y%m%d")
+        serial_num = dataset["DeviceSerialNumber"].value
 
         # Reformat study_uid
         study_uid = study_uid.replace(".","+")
