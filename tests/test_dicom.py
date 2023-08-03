@@ -9,7 +9,7 @@ from pybrors.utils import GenericDir, GenericFile
 from pybrors.dicom import DicomFile, DicomDir
 
 
-def test_generic():
+def test_generic_file_and_generic_dir():
     """
     A function to test the GenericFile and GenericDir classes.
 
@@ -57,7 +57,7 @@ def test_dicom_file():
     # Create file instance
     tmp = DicomFile(file_path="ext/data/dicom/dicom_img_file.dcm")
     print(tmp)
-    print(tmp.dataset["Modality"].value)
+    print(tmp.dataset["PatientName"].value)
 
     # Anonymize DICOM file
     if tmp.anonymize():
@@ -65,5 +65,9 @@ def test_dicom_file():
     else:
         print("DICOM has not been anonymized.")
 
+    # Display anonymized file information
     print(tmp)
     print(tmp.dataset["PatientName"])
+
+
+# def test_dicom_dir():
