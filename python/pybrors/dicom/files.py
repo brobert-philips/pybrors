@@ -163,6 +163,9 @@ class DicomFile(GenericFile):
                 print("Directory %s does not exist.", new_dir_path)
                 return False
         new_path = os.path.abspath(new_path)
+        new_path = os.path.join(new_path, "anonymized")
+        if not os.path.exists(os.path.dirname(new_path)):
+            os.makedirs(os.path.dirname(new_path))
 
         # Anonymize DICOM dataset
         if not self._anonymize_dataset():
