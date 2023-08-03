@@ -71,7 +71,27 @@ def test_dicom_file():
 
 
 def test_dicom_dir():
+    """
+    Test the functionality of the DicomDir class.
+
+    This function creates an instance of the DicomDir class using the
+    "ext/data/dicom" directory path. It then prints the instance and
+    the dicom_df attribute.
+
+    The function also attempts to anonymize the DICOM files in the
+    directory. If the anonymization is successful, it prints "DICOM
+    directory has been anonymized." Otherwise, it prints "DICOM
+    directory has not been anonymized."
+
+    There is no return value for this function.
+    """
     # Create file instance
-    tmp = DicomDir(dir_path="exts/data/dicom")
+    tmp = DicomDir(dir_path="ext/data/dicom")
     print(tmp)
     print(tmp.dicom_df)
+
+    # Anonymize DICOM file
+    if tmp.anonymize():
+        print("DICOM directory has been anonymized.")
+    else:
+        print("DICOM directory has not been anonymized.")

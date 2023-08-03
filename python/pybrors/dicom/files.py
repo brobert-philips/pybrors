@@ -180,7 +180,6 @@ class DicomFile(GenericFile):
         else:
             if GenericDir.test_dir(new_dir_path):
                 new_path = new_dir_path
-                new_path = os.path.join(new_path, "anonymized")
             else:
                 print("Directory %s does not exist.", new_dir_path)
                 return False
@@ -374,3 +373,27 @@ class DicomDir(GenericDir):
         non_dicom_files = self.file_list
         self.file_list  = list(self.dicom_df.path)
         non_dicom_files = list(set(non_dicom_files) - set(self.file_list))
+
+    def anonymize(self) -> bool:
+        """
+        Anonymizes the DICOM files in the specified directory.
+
+        Returns
+        -------
+        bool
+            True if the anonymization is successful, False otherwise.
+        """
+        # Check if new directory path is given
+        new_path = os.path.join(self.dir_path, "anonymized")
+
+        # Control if path is accessible and create subdirectories if needed
+        if not os.path.exists(new_path):
+            os.makedirs(new_path)
+
+        # Anonymize DICOM files
+        for file_path in self.file_list:
+            dicom_file = DicomFile(file_path)
+            if not dicom_file.anonymize(new_dir_path=new_path):
+                return False
+        print("Anonymized %i DICOM files.", len(self.file_list))
+        return True
