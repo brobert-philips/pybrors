@@ -129,15 +129,6 @@ class DicomFile(GenericFile):
             print("No ImageType tag.")
             return False
 
-        # ImageType tag must exist, and it should have at least 3 values
-        # if "ImageType" not in dicom_tags:
-        #     print("No ImageType tag.")
-        #     return False
-
-        # if len(dicom_tags["ImageType"].value) < 3:
-        #     print("No ImageType tag.")
-        #     return False
-
         return True
 
 
