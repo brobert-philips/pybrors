@@ -210,7 +210,7 @@ class DicomFile(GenericFile):
             # Create new file absolute path
             new_path += f"{os.sep}{pid}{os.sep}{acc_num[-16:]}{os.sep}"
             new_path += f"{series_uid[-16:]}_{modality}{os.sep}"
-            new_path += f"  {img_type}_{inst_num:05}.dcm"
+            new_path += f"{img_type}_{inst_num:05}.dcm"
 
         # Control if path is accessible and create subdirectories if needed
         if not os.path.exists(os.path.dirname(new_path)):
