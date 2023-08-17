@@ -193,32 +193,7 @@ class DicomFile(GenericFile):
 
         # Build anonymized file name if new_path is a directory
         if GenericDir.test_dir(new_path):
-            # Extract DICOM tags
-            pid        = anonym_dataset["PatientID"].value
-            acc_num    = anonym_dataset["AccessionNumber"].value
-            series_uid = anonym_dataset["SeriesInstanceUID"].value
-            modality   = anonym_dataset["Modality"].value
-
-            # Extract ImageType
-            if "ImageType" in anonym_dataset:
-                img_type = anonym_dataset["ImageType"].value
-                img_type = img_type[2] if len(img_type) > 2 else "UNK"
-            else:
-                print("ImageType set to 'UNK'.")
-                img_type = "UNK"
-
-            # Extract InstanceNumber
-            if "InstanceNumber" in anonym_dataset:
-                inst_num = anonym_dataset["InstanceNumber"].value
-
-            else:
-                print("InstanceNumber set to '00000'.")
-                inst_num = "00000"
-
-            # Create new file absolute path
-            new_path += f"{os.sep}{pid}{os.sep}{acc_num[-16:]}{os.sep}"
-            new_path += f"{series_uid[-16:]}_{modality}{os.sep}"
-            new_path += f"{img_type}_{inst_num:05}.dcm"
+            new_path += f"{os.sep}{self._build_anonymized_filepath(anonym_dataset)}"
 
         # Control if path is accessible and create subdirectories if needed
         if not os.path.exists(os.path.dirname(new_path)):
@@ -227,6 +202,36 @@ class DicomFile(GenericFile):
         # Save anonymized file
         anonym_dataset.save_as(new_path)
         return True
+
+
+    def _build_anonymized_filepath(self, dataset: pydicom.dataset.Dataset) -> str:
+        # Extract DICOM tags
+        pid        = dataset["PatientID"].value
+        acc_num    = dataset["AccessionNumber"].value
+        series_uid = dataset["SeriesInstanceUID"].value
+        modality   = dataset["Modality"].value
+
+        # Extract ImageType
+        if "ImageType" in dataset:
+            img_type = dataset["ImageType"].value
+            img_type = img_type[2] if len(img_type) > 2 else "UNK"
+        else:
+            print("ImageType set to 'UNK'.")
+            img_type = "UNK"
+
+        # Extract InstanceNumber
+        if "InstanceNumber" in dataset:
+            inst_num = dataset["InstanceNumber"].value
+        else:
+            print("InstanceNumber set to '00000'.")
+            inst_num = "00000"
+
+        # Create new file absolute path
+        new_path  = f"{pid}{os.sep}{acc_num[-16:]}{os.sep}"
+        new_path += f"{series_uid[-16:]}_{modality}{os.sep}"
+        new_path += f"{img_type}_{inst_num:05}.dcm"
+
+        return new_path
 
 
     def get_dicom_info(self) -> dict:
