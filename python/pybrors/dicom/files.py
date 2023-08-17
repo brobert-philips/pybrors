@@ -198,14 +198,22 @@ class DicomFile(GenericFile):
             acc_num    = anonym_dataset["AccessionNumber"].value
             series_uid = anonym_dataset["SeriesInstanceUID"].value
             modality   = anonym_dataset["Modality"].value
-            inst_num   = anonym_dataset["InstanceNumber"].value
 
             # Extract ImageType
             if "ImageType" in anonym_dataset:
                 img_type = anonym_dataset["ImageType"].value
                 img_type = img_type[2] if len(img_type) > 2 else "UNK"
             else:
+                print("ImageType set to 'UNK'.")
                 img_type = "UNK"
+
+            # Extract InstanceNumber
+            if "InstanceNumber" in anonym_dataset:
+                inst_num = anonym_dataset["InstanceNumber"].value
+
+            else:
+                print("InstanceNumber set to '00000'.")
+                inst_num = "00000"
 
             # Create new file absolute path
             new_path += f"{os.sep}{pid}{os.sep}{acc_num[-16:]}{os.sep}"
