@@ -205,6 +205,19 @@ class DicomFile(GenericFile):
 
 
     def _build_anonymized_filepath(self, dataset: pydicom.dataset.Dataset) -> str:
+        """
+        Builds an anonymized file path based on the given dataset.
+
+        Parameters
+        ----------
+        dataset : pydicom.dataset.Dataset
+            The dataset containing the DICOM tags.
+
+        Returns
+        -------
+        str
+            The absolute file path of the anonymized file.
+        """
         # Extract DICOM tags
         pid        = dataset["PatientID"].value
         acc_num    = dataset["AccessionNumber"].value
