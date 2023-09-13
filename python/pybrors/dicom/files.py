@@ -47,6 +47,37 @@ TAGS_CLEARED = [
     "RequestedProcedureID",
     "IssueDateOfImagingServiceRequest",
     "ContentSequence",
+    "ImplementationVersionName",
+    "ProcedureCodeSequence",
+    "PerformedProcedureStepDescription",
+    "PerformedProtocolCodeSequence",
+    "RetrieveAETitle",
+    "ReferencedPerformedProcedureStepSequence",
+    "0x00e110a0",
+    "0x00e110d5",
+    "0x10010010",
+    "0x10010011",
+    "0x10011003",
+    "0x20010010",
+    "0x20010011",
+    "0x200110c8",
+    "0x2001105f",
+    "0x20050010",
+    "0x20050011",
+    "0x20050012",
+    "0x20050013",
+    "0x20050014",
+    "0x20050015",
+    "0x20050016",
+    "0x20051013",
+    # "StationName",
+    # "Manufacturer",
+    # "SeriesDescription",
+    # "StudyDescription",
+    # "ManufacturerModelName",
+    # "ProtocolName",
+    # "ReceiveCoilName",
+    # "LUTLabel",
 ]
 """Constant containing all cleared DICOM tags."""
 
@@ -220,7 +251,6 @@ class DicomFile(GenericFile):
         """
         # Extract DICOM tags
         pid        = dataset["PatientID"].value
-        acc_num    = dataset["AccessionNumber"].value
         series_uid = dataset["SeriesInstanceUID"].value
         modality   = dataset["Modality"].value
 
@@ -238,6 +268,13 @@ class DicomFile(GenericFile):
         else:
             print("InstanceNumber set to '00000'.")
             inst_num = "00000"
+
+        # Extract AccessionNumber
+        if "AccessionNumber" in dataset:
+            acc_num = dataset["AccessionNumber"].value
+        else:
+            print("AccessionNumber set to '12345'.")
+            acc_num = "12345"
 
         # Create new file absolute path
         new_path  = f"{pid}{os.sep}{acc_num[-16:]}{os.sep}"
