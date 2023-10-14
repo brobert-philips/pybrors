@@ -7,6 +7,7 @@ __all__ = [
     "sum_as_string",
     "utils",
     "dicom",
+    "pubmed",
 ]
 
 
@@ -14,3 +15,4 @@ __all__ = [
 from .rust_lib import sum_as_string
 from . import utils
 from . import dicom
+from . import pubmed
