@@ -3,6 +3,8 @@ File: pubmed/data.py
 """
 
 # Import packages and submodules
+import copy
+import pandas
 
 # Import classes and methods
 from pybrors.pubmed import PubmedFile
@@ -67,6 +69,11 @@ class PubmedData:
         dir_path : str
             The absolute path of the DICOM directory.
         """
+        # Initialize class attributes
+        self.articles = ()
+        self.authors = ()
+        self.keywords = ()
+
         # Load a single DICOM file
         if file_path is not None:
             self._get_file_data(file_path)
@@ -92,6 +99,34 @@ class PubmedData:
         self.authors  = tmp_file.authors
         self.keywords = tmp_file.keywords
 
-        # Extract file information
-        self.file_dir   = tmp_file.file_dir
-        self.file_list = [tmp_file.file_name]
+    def __add__(self, other):
+        """Left addition of PubMedFile."""
+        result          = copy.deepcopy(self)
+
+        #  Add new bibliography
+        if isinstance(other, PubmedData):
+            # Concatenate DataFrames
+            result.articles = pandas.concat(
+                    [result.articles, other.articles], ignore_index=True,
+                    axis=0, join="outer")
+            result.authors  = pandas.concat(
+                    [result.authors, other.authors], ignore_index=True,
+                    axis=0, join="outer")
+            result.keywords = pandas.concat(
+                    [result.keywords, other.keywords], ignore_index=True,
+                    axis=0, join="outer")
+
+            # Remove all duplicated lines
+            result.articles.drop_duplicates(keep="first", inplace=True)
+            result.authors.drop_duplicates(keep="first", inplace=True)
+            result.keywords.drop_duplicates(keep="first", inplace=True)
+
+        else:
+            err_msg = f"Data type {type(other)} is not supported."
+            raise TypeError(err_msg)
+
+        return result
+
+    def __radd__(self, other):
+        """Right addition of PubMedFile."""
+        return self.__add__(other)

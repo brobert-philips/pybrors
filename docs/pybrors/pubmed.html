@@ -94,6 +94,15 @@
                         <li>
                                 <a class="variable" href="#PubmedData.WORDS_REPLACE">WORDS_REPLACE</a>
                         </li>
+                        <li>
+                                <a class="variable" href="#PubmedData.articles">articles</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PubmedData.authors">authors</a>
+                        </li>
+                        <li>
+                                <a class="variable" href="#PubmedData.keywords">keywords</a>
+                        </li>
                 </ul>
 
             </li>
@@ -562,93 +571,126 @@ file selection dialog will be displayed.</li>
 
     </div>
     <a class="headerlink" href="#PubmedData"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="PubmedData-12"><a href="#PubmedData-12"><span class="linenos">12</span></a><span class="k">class</span> <span class="nc">PubmedData</span><span class="p">:</span>
-</span><span id="PubmedData-13"><a href="#PubmedData-13"><span class="linenos">13</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="PubmedData-14"><a href="#PubmedData-14"><span class="linenos">14</span></a><span class="sd">    PUBMED data class.</span>
-</span><span id="PubmedData-15"><a href="#PubmedData-15"><span class="linenos">15</span></a>
-</span><span id="PubmedData-16"><a href="#PubmedData-16"><span class="linenos">16</span></a><span class="sd">    Attributes</span>
-</span><span id="PubmedData-17"><a href="#PubmedData-17"><span class="linenos">17</span></a><span class="sd">    ----------</span>
-</span><span id="PubmedData-18"><a href="#PubmedData-18"><span class="linenos">18</span></a><span class="sd">    file_dir : str</span>
-</span><span id="PubmedData-19"><a href="#PubmedData-19"><span class="linenos">19</span></a><span class="sd">        The directory containing the file.</span>
-</span><span id="PubmedData-20"><a href="#PubmedData-20"><span class="linenos">20</span></a><span class="sd">    file_list : list[str]</span>
-</span><span id="PubmedData-21"><a href="#PubmedData-21"><span class="linenos">21</span></a><span class="sd">        A list of file names in the directory.</span>
-</span><span id="PubmedData-22"><a href="#PubmedData-22"><span class="linenos">22</span></a><span class="sd">    articles : pandas.DataFrame</span>
-</span><span id="PubmedData-23"><a href="#PubmedData-23"><span class="linenos">23</span></a><span class="sd">        All articles table.</span>
-</span><span id="PubmedData-24"><a href="#PubmedData-24"><span class="linenos">24</span></a><span class="sd">    authors : pandas.DataFrame</span>
-</span><span id="PubmedData-25"><a href="#PubmedData-25"><span class="linenos">25</span></a><span class="sd">        All authors table.</span>
-</span><span id="PubmedData-26"><a href="#PubmedData-26"><span class="linenos">26</span></a><span class="sd">    keywords : pandas.DataFrame</span>
-</span><span id="PubmedData-27"><a href="#PubmedData-27"><span class="linenos">27</span></a><span class="sd">        All keywords table.</span>
-</span><span id="PubmedData-28"><a href="#PubmedData-28"><span class="linenos">28</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="PubmedData-29"><a href="#PubmedData-29"><span class="linenos">29</span></a>
-</span><span id="PubmedData-30"><a href="#PubmedData-30"><span class="linenos">30</span></a>    <span class="n">WORDS_REMOVE</span> <span class="o">=</span> <span class="p">[</span>
-</span><span id="PubmedData-31"><a href="#PubmedData-31"><span class="linenos">31</span></a>        <span class="s2">&quot;ci&quot;</span>
-</span><span id="PubmedData-32"><a href="#PubmedData-32"><span class="linenos">32</span></a>    <span class="p">]</span>
-</span><span id="PubmedData-33"><a href="#PubmedData-33"><span class="linenos">33</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="PubmedData-34"><a href="#PubmedData-34"><span class="linenos">34</span></a><span class="sd">    Class variable corresponding to all removed fields from wordcloud.</span>
-</span><span id="PubmedData-35"><a href="#PubmedData-35"><span class="linenos">35</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="PubmedData-36"><a href="#PubmedData-36"><span class="linenos">36</span></a>
-</span><span id="PubmedData-37"><a href="#PubmedData-37"><span class="linenos">37</span></a>    <span class="n">WORDS_REPLACE</span> <span class="o">=</span> <span class="p">{</span>
-</span><span id="PubmedData-38"><a href="#PubmedData-38"><span class="linenos">38</span></a>        <span class="s2">&quot;à&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;â&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;é&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;è&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;ê&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;ô&quot;</span><span class="p">:</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;ö&quot;</span><span class="p">:</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-39"><a href="#PubmedData-39"><span class="linenos">39</span></a>        <span class="s2">&quot;ù&quot;</span><span class="p">:</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;û&quot;</span><span class="p">:</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-40"><a href="#PubmedData-40"><span class="linenos">40</span></a>        <span class="s2">&quot;computed tomography&quot;</span><span class="p">:</span> <span class="s2">&quot;ct&quot;</span><span class="p">,</span> <span class="s2">&quot;tomography, x-ray computed&quot;</span><span class="p">:</span> <span class="s2">&quot;ct&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-41"><a href="#PubmedData-41"><span class="linenos">41</span></a>        <span class="s2">&quot;magnetic resonance imaging&quot;</span><span class="p">:</span> <span class="s2">&quot;mri&quot;</span><span class="p">,</span> <span class="s2">&quot;magnetic resonance&quot;</span><span class="p">:</span> <span class="s2">&quot;mri&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-42"><a href="#PubmedData-42"><span class="linenos">42</span></a>        <span class="s2">&quot;mr &quot;</span><span class="p">:</span> <span class="s2">&quot;mri &quot;</span><span class="p">,</span> <span class="s2">&quot;mrs&quot;</span><span class="p">:</span> <span class="s2">&quot;spectroscopy&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-43"><a href="#PubmedData-43"><span class="linenos">43</span></a>        <span class="s2">&quot;positron-emission tomography&quot;</span><span class="p">:</span> <span class="s2">&quot;pet&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-44"><a href="#PubmedData-44"><span class="linenos">44</span></a>        <span class="s2">&quot;diagnostic imaging&quot;</span><span class="p">:</span> <span class="s2">&quot;imaging&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-45"><a href="#PubmedData-45"><span class="linenos">45</span></a>        <span class="s2">&quot;adults&quot;</span><span class="p">:</span> <span class="s2">&quot;adult&quot;</span><span class="p">,</span> <span class="s2">&quot;agents&quot;</span><span class="p">:</span> <span class="s2">&quot;agent&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-46"><a href="#PubmedData-46"><span class="linenos">46</span></a>        <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="s2">&quot;child&quot;</span><span class="p">,</span> <span class="s2">&quot;complications&quot;</span><span class="p">:</span> <span class="s2">&quot;complication&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-47"><a href="#PubmedData-47"><span class="linenos">47</span></a>        <span class="s2">&quot;drugs&quot;</span><span class="p">:</span> <span class="s2">&quot;drug&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-48"><a href="#PubmedData-48"><span class="linenos">48</span></a>        <span class="s2">&quot;factors&quot;</span><span class="p">:</span> <span class="s2">&quot;factor&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-49"><a href="#PubmedData-49"><span class="linenos">49</span></a>        <span class="s2">&quot;procedures&quot;</span><span class="p">:</span> <span class="s2">&quot;procedure&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-50"><a href="#PubmedData-50"><span class="linenos">50</span></a>        <span class="s2">&quot;studies&quot;</span><span class="p">:</span> <span class="s2">&quot;study&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-51"><a href="#PubmedData-51"><span class="linenos">51</span></a>        <span class="s2">&quot;tissues&quot;</span><span class="p">:</span> <span class="s2">&quot;tissue&quot;</span><span class="p">,</span> <span class="s2">&quot;trends&quot;</span><span class="p">:</span> <span class="s2">&quot;trend&quot;</span><span class="p">,</span>
-</span><span id="PubmedData-52"><a href="#PubmedData-52"><span class="linenos">52</span></a>        <span class="s2">&quot;ies &quot;</span><span class="p">:</span> <span class="s2">&quot;y &quot;</span><span class="p">,</span>
-</span><span id="PubmedData-53"><a href="#PubmedData-53"><span class="linenos">53</span></a>        <span class="s2">&quot;-&quot;</span><span class="p">:</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
-</span><span id="PubmedData-54"><a href="#PubmedData-54"><span class="linenos">54</span></a>        <span class="s2">&quot;&lt;&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
-</span><span id="PubmedData-55"><a href="#PubmedData-55"><span class="linenos">55</span></a>    <span class="p">}</span>
-</span><span id="PubmedData-56"><a href="#PubmedData-56"><span class="linenos">56</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="PubmedData-57"><a href="#PubmedData-57"><span class="linenos">57</span></a><span class="sd">    Class variable corresponding to all replaced words.</span>
-</span><span id="PubmedData-58"><a href="#PubmedData-58"><span class="linenos">58</span></a><span class="sd">    &quot;&quot;&quot;</span>
-</span><span id="PubmedData-59"><a href="#PubmedData-59"><span class="linenos">59</span></a>
-</span><span id="PubmedData-60"><a href="#PubmedData-60"><span class="linenos">60</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="PubmedData-61"><a href="#PubmedData-61"><span class="linenos">61</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="PubmedData-62"><a href="#PubmedData-62"><span class="linenos">62</span></a><span class="sd">        Initializes a DICOM data object.</span>
-</span><span id="PubmedData-63"><a href="#PubmedData-63"><span class="linenos">63</span></a>
-</span><span id="PubmedData-64"><a href="#PubmedData-64"><span class="linenos">64</span></a><span class="sd">        Parameters</span>
-</span><span id="PubmedData-65"><a href="#PubmedData-65"><span class="linenos">65</span></a><span class="sd">        ----------</span>
-</span><span id="PubmedData-66"><a href="#PubmedData-66"><span class="linenos">66</span></a><span class="sd">        file_path : str</span>
-</span><span id="PubmedData-67"><a href="#PubmedData-67"><span class="linenos">67</span></a><span class="sd">            The absolute path of the DICOM file.</span>
-</span><span id="PubmedData-68"><a href="#PubmedData-68"><span class="linenos">68</span></a><span class="sd">        dir_path : str</span>
-</span><span id="PubmedData-69"><a href="#PubmedData-69"><span class="linenos">69</span></a><span class="sd">            The absolute path of the DICOM directory.</span>
-</span><span id="PubmedData-70"><a href="#PubmedData-70"><span class="linenos">70</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="PubmedData-71"><a href="#PubmedData-71"><span class="linenos">71</span></a>        <span class="c1"># Load a single DICOM file</span>
-</span><span id="PubmedData-72"><a href="#PubmedData-72"><span class="linenos">72</span></a>        <span class="k">if</span> <span class="n">file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="PubmedData-73"><a href="#PubmedData-73"><span class="linenos">73</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-</span><span id="PubmedData-74"><a href="#PubmedData-74"><span class="linenos">74</span></a>
-</span><span id="PubmedData-75"><a href="#PubmedData-75"><span class="linenos">75</span></a>        <span class="k">else</span><span class="p">:</span>
-</span><span id="PubmedData-76"><a href="#PubmedData-76"><span class="linenos">76</span></a>            <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;No file or directory were provided to load PUBMED data.&quot;</span>
-</span><span id="PubmedData-77"><a href="#PubmedData-77"><span class="linenos">77</span></a>            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
-</span><span id="PubmedData-78"><a href="#PubmedData-78"><span class="linenos">78</span></a>
-</span><span id="PubmedData-79"><a href="#PubmedData-79"><span class="linenos">79</span></a>    <span class="k">def</span> <span class="nf">_get_file_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="PubmedData-80"><a href="#PubmedData-80"><span class="linenos">80</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="PubmedData-81"><a href="#PubmedData-81"><span class="linenos">81</span></a><span class="sd">        Load PUBMED file from the given file path and extract its data.</span>
-</span><span id="PubmedData-82"><a href="#PubmedData-82"><span class="linenos">82</span></a>
-</span><span id="PubmedData-83"><a href="#PubmedData-83"><span class="linenos">83</span></a><span class="sd">        Parameters</span>
-</span><span id="PubmedData-84"><a href="#PubmedData-84"><span class="linenos">84</span></a><span class="sd">        ----------</span>
-</span><span id="PubmedData-85"><a href="#PubmedData-85"><span class="linenos">85</span></a><span class="sd">        file_path : str</span>
-</span><span id="PubmedData-86"><a href="#PubmedData-86"><span class="linenos">86</span></a><span class="sd">            The path to the PUBMED file.</span>
-</span><span id="PubmedData-87"><a href="#PubmedData-87"><span class="linenos">87</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="PubmedData-88"><a href="#PubmedData-88"><span class="linenos">88</span></a>        <span class="c1"># Load PUBMED file</span>
-</span><span id="PubmedData-89"><a href="#PubmedData-89"><span class="linenos">89</span></a>        <span class="n">tmp_file</span> <span class="o">=</span> <span class="n">PubmedFile</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span>
-</span><span id="PubmedData-90"><a href="#PubmedData-90"><span class="linenos">90</span></a>
-</span><span id="PubmedData-91"><a href="#PubmedData-91"><span class="linenos">91</span></a>        <span class="c1"># Extract all data</span>
-</span><span id="PubmedData-92"><a href="#PubmedData-92"><span class="linenos">92</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">articles</span> <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">articles</span>
-</span><span id="PubmedData-93"><a href="#PubmedData-93"><span class="linenos">93</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">authors</span>  <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">authors</span>
-</span><span id="PubmedData-94"><a href="#PubmedData-94"><span class="linenos">94</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">keywords</span>
-</span><span id="PubmedData-95"><a href="#PubmedData-95"><span class="linenos">95</span></a>
-</span><span id="PubmedData-96"><a href="#PubmedData-96"><span class="linenos">96</span></a>        <span class="c1"># Extract file information</span>
-</span><span id="PubmedData-97"><a href="#PubmedData-97"><span class="linenos">97</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">file_dir</span>   <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">file_dir</span>
-</span><span id="PubmedData-98"><a href="#PubmedData-98"><span class="linenos">98</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">file_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">tmp_file</span><span class="o">.</span><span class="n">file_name</span><span class="p">]</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="PubmedData-14"><a href="#PubmedData-14"><span class="linenos"> 14</span></a><span class="k">class</span> <span class="nc">PubmedData</span><span class="p">:</span>
+</span><span id="PubmedData-15"><a href="#PubmedData-15"><span class="linenos"> 15</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="PubmedData-16"><a href="#PubmedData-16"><span class="linenos"> 16</span></a><span class="sd">    PUBMED data class.</span>
+</span><span id="PubmedData-17"><a href="#PubmedData-17"><span class="linenos"> 17</span></a>
+</span><span id="PubmedData-18"><a href="#PubmedData-18"><span class="linenos"> 18</span></a><span class="sd">    Attributes</span>
+</span><span id="PubmedData-19"><a href="#PubmedData-19"><span class="linenos"> 19</span></a><span class="sd">    ----------</span>
+</span><span id="PubmedData-20"><a href="#PubmedData-20"><span class="linenos"> 20</span></a><span class="sd">    file_dir : str</span>
+</span><span id="PubmedData-21"><a href="#PubmedData-21"><span class="linenos"> 21</span></a><span class="sd">        The directory containing the file.</span>
+</span><span id="PubmedData-22"><a href="#PubmedData-22"><span class="linenos"> 22</span></a><span class="sd">    file_list : list[str]</span>
+</span><span id="PubmedData-23"><a href="#PubmedData-23"><span class="linenos"> 23</span></a><span class="sd">        A list of file names in the directory.</span>
+</span><span id="PubmedData-24"><a href="#PubmedData-24"><span class="linenos"> 24</span></a><span class="sd">    articles : pandas.DataFrame</span>
+</span><span id="PubmedData-25"><a href="#PubmedData-25"><span class="linenos"> 25</span></a><span class="sd">        All articles table.</span>
+</span><span id="PubmedData-26"><a href="#PubmedData-26"><span class="linenos"> 26</span></a><span class="sd">    authors : pandas.DataFrame</span>
+</span><span id="PubmedData-27"><a href="#PubmedData-27"><span class="linenos"> 27</span></a><span class="sd">        All authors table.</span>
+</span><span id="PubmedData-28"><a href="#PubmedData-28"><span class="linenos"> 28</span></a><span class="sd">    keywords : pandas.DataFrame</span>
+</span><span id="PubmedData-29"><a href="#PubmedData-29"><span class="linenos"> 29</span></a><span class="sd">        All keywords table.</span>
+</span><span id="PubmedData-30"><a href="#PubmedData-30"><span class="linenos"> 30</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="PubmedData-31"><a href="#PubmedData-31"><span class="linenos"> 31</span></a>
+</span><span id="PubmedData-32"><a href="#PubmedData-32"><span class="linenos"> 32</span></a>    <span class="n">WORDS_REMOVE</span> <span class="o">=</span> <span class="p">[</span>
+</span><span id="PubmedData-33"><a href="#PubmedData-33"><span class="linenos"> 33</span></a>        <span class="s2">&quot;ci&quot;</span>
+</span><span id="PubmedData-34"><a href="#PubmedData-34"><span class="linenos"> 34</span></a>    <span class="p">]</span>
+</span><span id="PubmedData-35"><a href="#PubmedData-35"><span class="linenos"> 35</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="PubmedData-36"><a href="#PubmedData-36"><span class="linenos"> 36</span></a><span class="sd">    Class variable corresponding to all removed fields from wordcloud.</span>
+</span><span id="PubmedData-37"><a href="#PubmedData-37"><span class="linenos"> 37</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="PubmedData-38"><a href="#PubmedData-38"><span class="linenos"> 38</span></a>
+</span><span id="PubmedData-39"><a href="#PubmedData-39"><span class="linenos"> 39</span></a>    <span class="n">WORDS_REPLACE</span> <span class="o">=</span> <span class="p">{</span>
+</span><span id="PubmedData-40"><a href="#PubmedData-40"><span class="linenos"> 40</span></a>        <span class="s2">&quot;à&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;â&quot;</span><span class="p">:</span> <span class="s2">&quot;a&quot;</span><span class="p">,</span> <span class="s2">&quot;é&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;è&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;ê&quot;</span><span class="p">:</span> <span class="s2">&quot;e&quot;</span><span class="p">,</span> <span class="s2">&quot;ô&quot;</span><span class="p">:</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="s2">&quot;ö&quot;</span><span class="p">:</span> <span class="s2">&quot;o&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-41"><a href="#PubmedData-41"><span class="linenos"> 41</span></a>        <span class="s2">&quot;ù&quot;</span><span class="p">:</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span> <span class="s2">&quot;û&quot;</span><span class="p">:</span> <span class="s2">&quot;u&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-42"><a href="#PubmedData-42"><span class="linenos"> 42</span></a>        <span class="s2">&quot;computed tomography&quot;</span><span class="p">:</span> <span class="s2">&quot;ct&quot;</span><span class="p">,</span> <span class="s2">&quot;tomography, x-ray computed&quot;</span><span class="p">:</span> <span class="s2">&quot;ct&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-43"><a href="#PubmedData-43"><span class="linenos"> 43</span></a>        <span class="s2">&quot;magnetic resonance imaging&quot;</span><span class="p">:</span> <span class="s2">&quot;mri&quot;</span><span class="p">,</span> <span class="s2">&quot;magnetic resonance&quot;</span><span class="p">:</span> <span class="s2">&quot;mri&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-44"><a href="#PubmedData-44"><span class="linenos"> 44</span></a>        <span class="s2">&quot;mr &quot;</span><span class="p">:</span> <span class="s2">&quot;mri &quot;</span><span class="p">,</span> <span class="s2">&quot;mrs&quot;</span><span class="p">:</span> <span class="s2">&quot;spectroscopy&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-45"><a href="#PubmedData-45"><span class="linenos"> 45</span></a>        <span class="s2">&quot;positron-emission tomography&quot;</span><span class="p">:</span> <span class="s2">&quot;pet&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-46"><a href="#PubmedData-46"><span class="linenos"> 46</span></a>        <span class="s2">&quot;diagnostic imaging&quot;</span><span class="p">:</span> <span class="s2">&quot;imaging&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-47"><a href="#PubmedData-47"><span class="linenos"> 47</span></a>        <span class="s2">&quot;adults&quot;</span><span class="p">:</span> <span class="s2">&quot;adult&quot;</span><span class="p">,</span> <span class="s2">&quot;agents&quot;</span><span class="p">:</span> <span class="s2">&quot;agent&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-48"><a href="#PubmedData-48"><span class="linenos"> 48</span></a>        <span class="s2">&quot;children&quot;</span><span class="p">:</span> <span class="s2">&quot;child&quot;</span><span class="p">,</span> <span class="s2">&quot;complications&quot;</span><span class="p">:</span> <span class="s2">&quot;complication&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-49"><a href="#PubmedData-49"><span class="linenos"> 49</span></a>        <span class="s2">&quot;drugs&quot;</span><span class="p">:</span> <span class="s2">&quot;drug&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-50"><a href="#PubmedData-50"><span class="linenos"> 50</span></a>        <span class="s2">&quot;factors&quot;</span><span class="p">:</span> <span class="s2">&quot;factor&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-51"><a href="#PubmedData-51"><span class="linenos"> 51</span></a>        <span class="s2">&quot;procedures&quot;</span><span class="p">:</span> <span class="s2">&quot;procedure&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-52"><a href="#PubmedData-52"><span class="linenos"> 52</span></a>        <span class="s2">&quot;studies&quot;</span><span class="p">:</span> <span class="s2">&quot;study&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-53"><a href="#PubmedData-53"><span class="linenos"> 53</span></a>        <span class="s2">&quot;tissues&quot;</span><span class="p">:</span> <span class="s2">&quot;tissue&quot;</span><span class="p">,</span> <span class="s2">&quot;trends&quot;</span><span class="p">:</span> <span class="s2">&quot;trend&quot;</span><span class="p">,</span>
+</span><span id="PubmedData-54"><a href="#PubmedData-54"><span class="linenos"> 54</span></a>        <span class="s2">&quot;ies &quot;</span><span class="p">:</span> <span class="s2">&quot;y &quot;</span><span class="p">,</span>
+</span><span id="PubmedData-55"><a href="#PubmedData-55"><span class="linenos"> 55</span></a>        <span class="s2">&quot;-&quot;</span><span class="p">:</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="s2">&quot;/&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;*&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;,&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&amp;&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;=&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;&gt;&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span>
+</span><span id="PubmedData-56"><a href="#PubmedData-56"><span class="linenos"> 56</span></a>        <span class="s2">&quot;&lt;&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="s2">&quot;.&quot;</span><span class="p">:</span> <span class="s2">&quot; &quot;</span>
+</span><span id="PubmedData-57"><a href="#PubmedData-57"><span class="linenos"> 57</span></a>    <span class="p">}</span>
+</span><span id="PubmedData-58"><a href="#PubmedData-58"><span class="linenos"> 58</span></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="PubmedData-59"><a href="#PubmedData-59"><span class="linenos"> 59</span></a><span class="sd">    Class variable corresponding to all replaced words.</span>
+</span><span id="PubmedData-60"><a href="#PubmedData-60"><span class="linenos"> 60</span></a><span class="sd">    &quot;&quot;&quot;</span>
+</span><span id="PubmedData-61"><a href="#PubmedData-61"><span class="linenos"> 61</span></a>
+</span><span id="PubmedData-62"><a href="#PubmedData-62"><span class="linenos"> 62</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="PubmedData-63"><a href="#PubmedData-63"><span class="linenos"> 63</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="PubmedData-64"><a href="#PubmedData-64"><span class="linenos"> 64</span></a><span class="sd">        Initializes a DICOM data object.</span>
+</span><span id="PubmedData-65"><a href="#PubmedData-65"><span class="linenos"> 65</span></a>
+</span><span id="PubmedData-66"><a href="#PubmedData-66"><span class="linenos"> 66</span></a><span class="sd">        Parameters</span>
+</span><span id="PubmedData-67"><a href="#PubmedData-67"><span class="linenos"> 67</span></a><span class="sd">        ----------</span>
+</span><span id="PubmedData-68"><a href="#PubmedData-68"><span class="linenos"> 68</span></a><span class="sd">        file_path : str</span>
+</span><span id="PubmedData-69"><a href="#PubmedData-69"><span class="linenos"> 69</span></a><span class="sd">            The absolute path of the DICOM file.</span>
+</span><span id="PubmedData-70"><a href="#PubmedData-70"><span class="linenos"> 70</span></a><span class="sd">        dir_path : str</span>
+</span><span id="PubmedData-71"><a href="#PubmedData-71"><span class="linenos"> 71</span></a><span class="sd">            The absolute path of the DICOM directory.</span>
+</span><span id="PubmedData-72"><a href="#PubmedData-72"><span class="linenos"> 72</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="PubmedData-73"><a href="#PubmedData-73"><span class="linenos"> 73</span></a>        <span class="c1"># Initialize class attributes</span>
+</span><span id="PubmedData-74"><a href="#PubmedData-74"><span class="linenos"> 74</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">articles</span> <span class="o">=</span> <span class="p">()</span>
+</span><span id="PubmedData-75"><a href="#PubmedData-75"><span class="linenos"> 75</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">authors</span> <span class="o">=</span> <span class="p">()</span>
+</span><span id="PubmedData-76"><a href="#PubmedData-76"><span class="linenos"> 76</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="p">()</span>
+</span><span id="PubmedData-77"><a href="#PubmedData-77"><span class="linenos"> 77</span></a>
+</span><span id="PubmedData-78"><a href="#PubmedData-78"><span class="linenos"> 78</span></a>        <span class="c1"># Load a single DICOM file</span>
+</span><span id="PubmedData-79"><a href="#PubmedData-79"><span class="linenos"> 79</span></a>        <span class="k">if</span> <span class="n">file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="PubmedData-80"><a href="#PubmedData-80"><span class="linenos"> 80</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</span><span id="PubmedData-81"><a href="#PubmedData-81"><span class="linenos"> 81</span></a>
+</span><span id="PubmedData-82"><a href="#PubmedData-82"><span class="linenos"> 82</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="PubmedData-83"><a href="#PubmedData-83"><span class="linenos"> 83</span></a>            <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;No file or directory were provided to load PUBMED data.&quot;</span>
+</span><span id="PubmedData-84"><a href="#PubmedData-84"><span class="linenos"> 84</span></a>            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+</span><span id="PubmedData-85"><a href="#PubmedData-85"><span class="linenos"> 85</span></a>
+</span><span id="PubmedData-86"><a href="#PubmedData-86"><span class="linenos"> 86</span></a>    <span class="k">def</span> <span class="nf">_get_file_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="PubmedData-87"><a href="#PubmedData-87"><span class="linenos"> 87</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="PubmedData-88"><a href="#PubmedData-88"><span class="linenos"> 88</span></a><span class="sd">        Load PUBMED file from the given file path and extract its data.</span>
+</span><span id="PubmedData-89"><a href="#PubmedData-89"><span class="linenos"> 89</span></a>
+</span><span id="PubmedData-90"><a href="#PubmedData-90"><span class="linenos"> 90</span></a><span class="sd">        Parameters</span>
+</span><span id="PubmedData-91"><a href="#PubmedData-91"><span class="linenos"> 91</span></a><span class="sd">        ----------</span>
+</span><span id="PubmedData-92"><a href="#PubmedData-92"><span class="linenos"> 92</span></a><span class="sd">        file_path : str</span>
+</span><span id="PubmedData-93"><a href="#PubmedData-93"><span class="linenos"> 93</span></a><span class="sd">            The path to the PUBMED file.</span>
+</span><span id="PubmedData-94"><a href="#PubmedData-94"><span class="linenos"> 94</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="PubmedData-95"><a href="#PubmedData-95"><span class="linenos"> 95</span></a>        <span class="c1"># Load PUBMED file</span>
+</span><span id="PubmedData-96"><a href="#PubmedData-96"><span class="linenos"> 96</span></a>        <span class="n">tmp_file</span> <span class="o">=</span> <span class="n">PubmedFile</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="n">file_path</span><span class="p">)</span>
+</span><span id="PubmedData-97"><a href="#PubmedData-97"><span class="linenos"> 97</span></a>
+</span><span id="PubmedData-98"><a href="#PubmedData-98"><span class="linenos"> 98</span></a>        <span class="c1"># Extract all data</span>
+</span><span id="PubmedData-99"><a href="#PubmedData-99"><span class="linenos"> 99</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">articles</span> <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">articles</span>
+</span><span id="PubmedData-100"><a href="#PubmedData-100"><span class="linenos">100</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">authors</span>  <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">authors</span>
+</span><span id="PubmedData-101"><a href="#PubmedData-101"><span class="linenos">101</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">tmp_file</span><span class="o">.</span><span class="n">keywords</span>
+</span><span id="PubmedData-102"><a href="#PubmedData-102"><span class="linenos">102</span></a>
+</span><span id="PubmedData-103"><a href="#PubmedData-103"><span class="linenos">103</span></a>    <span class="k">def</span> <span class="fm">__add__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span id="PubmedData-104"><a href="#PubmedData-104"><span class="linenos">104</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Left addition of PubMedFile.&quot;&quot;&quot;</span>
+</span><span id="PubmedData-105"><a href="#PubmedData-105"><span class="linenos">105</span></a>        <span class="n">result</span>          <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+</span><span id="PubmedData-106"><a href="#PubmedData-106"><span class="linenos">106</span></a>
+</span><span id="PubmedData-107"><a href="#PubmedData-107"><span class="linenos">107</span></a>        <span class="c1">#  Add new bibliography</span>
+</span><span id="PubmedData-108"><a href="#PubmedData-108"><span class="linenos">108</span></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">other</span><span class="p">,</span> <span class="n">PubmedData</span><span class="p">):</span>
+</span><span id="PubmedData-109"><a href="#PubmedData-109"><span class="linenos">109</span></a>            <span class="c1"># Concatenate DataFrames</span>
+</span><span id="PubmedData-110"><a href="#PubmedData-110"><span class="linenos">110</span></a>            <span class="n">result</span><span class="o">.</span><span class="n">articles</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+</span><span id="PubmedData-111"><a href="#PubmedData-111"><span class="linenos">111</span></a>                    <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">articles</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">articles</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="PubmedData-112"><a href="#PubmedData-112"><span class="linenos">112</span></a>                    <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">)</span>
+</span><span id="PubmedData-113"><a href="#PubmedData-113"><span class="linenos">113</span></a>            <span class="n">result</span><span class="o">.</span><span class="n">authors</span>  <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+</span><span id="PubmedData-114"><a href="#PubmedData-114"><span class="linenos">114</span></a>                    <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">authors</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">authors</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="PubmedData-115"><a href="#PubmedData-115"><span class="linenos">115</span></a>                    <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">)</span>
+</span><span id="PubmedData-116"><a href="#PubmedData-116"><span class="linenos">116</span></a>            <span class="n">result</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+</span><span id="PubmedData-117"><a href="#PubmedData-117"><span class="linenos">117</span></a>                    <span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">keywords</span><span class="p">,</span> <span class="n">other</span><span class="o">.</span><span class="n">keywords</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+</span><span id="PubmedData-118"><a href="#PubmedData-118"><span class="linenos">118</span></a>                    <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">join</span><span class="o">=</span><span class="s2">&quot;outer&quot;</span><span class="p">)</span>
+</span><span id="PubmedData-119"><a href="#PubmedData-119"><span class="linenos">119</span></a>
+</span><span id="PubmedData-120"><a href="#PubmedData-120"><span class="linenos">120</span></a>            <span class="c1"># Remove all duplicated lines</span>
+</span><span id="PubmedData-121"><a href="#PubmedData-121"><span class="linenos">121</span></a>            <span class="n">result</span><span class="o">.</span><span class="n">articles</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="PubmedData-122"><a href="#PubmedData-122"><span class="linenos">122</span></a>            <span class="n">result</span><span class="o">.</span><span class="n">authors</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="PubmedData-123"><a href="#PubmedData-123"><span class="linenos">123</span></a>            <span class="n">result</span><span class="o">.</span><span class="n">keywords</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="n">keep</span><span class="o">=</span><span class="s2">&quot;first&quot;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="PubmedData-124"><a href="#PubmedData-124"><span class="linenos">124</span></a>
+</span><span id="PubmedData-125"><a href="#PubmedData-125"><span class="linenos">125</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="PubmedData-126"><a href="#PubmedData-126"><span class="linenos">126</span></a>            <span class="n">err_msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Data type </span><span class="si">{</span><span class="nb">type</span><span class="p">(</span><span class="n">other</span><span class="p">)</span><span class="si">}</span><span class="s2"> is not supported.&quot;</span>
+</span><span id="PubmedData-127"><a href="#PubmedData-127"><span class="linenos">127</span></a>            <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+</span><span id="PubmedData-128"><a href="#PubmedData-128"><span class="linenos">128</span></a>
+</span><span id="PubmedData-129"><a href="#PubmedData-129"><span class="linenos">129</span></a>        <span class="k">return</span> <span class="n">result</span>
+</span><span id="PubmedData-130"><a href="#PubmedData-130"><span class="linenos">130</span></a>
+</span><span id="PubmedData-131"><a href="#PubmedData-131"><span class="linenos">131</span></a>    <span class="k">def</span> <span class="fm">__radd__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">other</span><span class="p">):</span>
+</span><span id="PubmedData-132"><a href="#PubmedData-132"><span class="linenos">132</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;Right addition of PubMedFile.&quot;&quot;&quot;</span>
+</span><span id="PubmedData-133"><a href="#PubmedData-133"><span class="linenos">133</span></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="fm">__add__</span><span class="p">(</span><span class="n">other</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -681,24 +723,29 @@ All keywords table.</li>
 
     </div>
     <a class="headerlink" href="#PubmedData.__init__"></a>
-            <div class="pdoc-code codehilite"><pre><span></span><span id="PubmedData.__init__-60"><a href="#PubmedData.__init__-60"><span class="linenos">60</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="PubmedData.__init__-61"><a href="#PubmedData.__init__-61"><span class="linenos">61</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-</span><span id="PubmedData.__init__-62"><a href="#PubmedData.__init__-62"><span class="linenos">62</span></a><span class="sd">        Initializes a DICOM data object.</span>
-</span><span id="PubmedData.__init__-63"><a href="#PubmedData.__init__-63"><span class="linenos">63</span></a>
-</span><span id="PubmedData.__init__-64"><a href="#PubmedData.__init__-64"><span class="linenos">64</span></a><span class="sd">        Parameters</span>
-</span><span id="PubmedData.__init__-65"><a href="#PubmedData.__init__-65"><span class="linenos">65</span></a><span class="sd">        ----------</span>
-</span><span id="PubmedData.__init__-66"><a href="#PubmedData.__init__-66"><span class="linenos">66</span></a><span class="sd">        file_path : str</span>
-</span><span id="PubmedData.__init__-67"><a href="#PubmedData.__init__-67"><span class="linenos">67</span></a><span class="sd">            The absolute path of the DICOM file.</span>
-</span><span id="PubmedData.__init__-68"><a href="#PubmedData.__init__-68"><span class="linenos">68</span></a><span class="sd">        dir_path : str</span>
-</span><span id="PubmedData.__init__-69"><a href="#PubmedData.__init__-69"><span class="linenos">69</span></a><span class="sd">            The absolute path of the DICOM directory.</span>
-</span><span id="PubmedData.__init__-70"><a href="#PubmedData.__init__-70"><span class="linenos">70</span></a><span class="sd">        &quot;&quot;&quot;</span>
-</span><span id="PubmedData.__init__-71"><a href="#PubmedData.__init__-71"><span class="linenos">71</span></a>        <span class="c1"># Load a single DICOM file</span>
-</span><span id="PubmedData.__init__-72"><a href="#PubmedData.__init__-72"><span class="linenos">72</span></a>        <span class="k">if</span> <span class="n">file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-</span><span id="PubmedData.__init__-73"><a href="#PubmedData.__init__-73"><span class="linenos">73</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
-</span><span id="PubmedData.__init__-74"><a href="#PubmedData.__init__-74"><span class="linenos">74</span></a>
-</span><span id="PubmedData.__init__-75"><a href="#PubmedData.__init__-75"><span class="linenos">75</span></a>        <span class="k">else</span><span class="p">:</span>
-</span><span id="PubmedData.__init__-76"><a href="#PubmedData.__init__-76"><span class="linenos">76</span></a>            <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;No file or directory were provided to load PUBMED data.&quot;</span>
-</span><span id="PubmedData.__init__-77"><a href="#PubmedData.__init__-77"><span class="linenos">77</span></a>            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+            <div class="pdoc-code codehilite"><pre><span></span><span id="PubmedData.__init__-62"><a href="#PubmedData.__init__-62"><span class="linenos">62</span></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="PubmedData.__init__-63"><a href="#PubmedData.__init__-63"><span class="linenos">63</span></a><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="PubmedData.__init__-64"><a href="#PubmedData.__init__-64"><span class="linenos">64</span></a><span class="sd">        Initializes a DICOM data object.</span>
+</span><span id="PubmedData.__init__-65"><a href="#PubmedData.__init__-65"><span class="linenos">65</span></a>
+</span><span id="PubmedData.__init__-66"><a href="#PubmedData.__init__-66"><span class="linenos">66</span></a><span class="sd">        Parameters</span>
+</span><span id="PubmedData.__init__-67"><a href="#PubmedData.__init__-67"><span class="linenos">67</span></a><span class="sd">        ----------</span>
+</span><span id="PubmedData.__init__-68"><a href="#PubmedData.__init__-68"><span class="linenos">68</span></a><span class="sd">        file_path : str</span>
+</span><span id="PubmedData.__init__-69"><a href="#PubmedData.__init__-69"><span class="linenos">69</span></a><span class="sd">            The absolute path of the DICOM file.</span>
+</span><span id="PubmedData.__init__-70"><a href="#PubmedData.__init__-70"><span class="linenos">70</span></a><span class="sd">        dir_path : str</span>
+</span><span id="PubmedData.__init__-71"><a href="#PubmedData.__init__-71"><span class="linenos">71</span></a><span class="sd">            The absolute path of the DICOM directory.</span>
+</span><span id="PubmedData.__init__-72"><a href="#PubmedData.__init__-72"><span class="linenos">72</span></a><span class="sd">        &quot;&quot;&quot;</span>
+</span><span id="PubmedData.__init__-73"><a href="#PubmedData.__init__-73"><span class="linenos">73</span></a>        <span class="c1"># Initialize class attributes</span>
+</span><span id="PubmedData.__init__-74"><a href="#PubmedData.__init__-74"><span class="linenos">74</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">articles</span> <span class="o">=</span> <span class="p">()</span>
+</span><span id="PubmedData.__init__-75"><a href="#PubmedData.__init__-75"><span class="linenos">75</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">authors</span> <span class="o">=</span> <span class="p">()</span>
+</span><span id="PubmedData.__init__-76"><a href="#PubmedData.__init__-76"><span class="linenos">76</span></a>        <span class="bp">self</span><span class="o">.</span><span class="n">keywords</span> <span class="o">=</span> <span class="p">()</span>
+</span><span id="PubmedData.__init__-77"><a href="#PubmedData.__init__-77"><span class="linenos">77</span></a>
+</span><span id="PubmedData.__init__-78"><a href="#PubmedData.__init__-78"><span class="linenos">78</span></a>        <span class="c1"># Load a single DICOM file</span>
+</span><span id="PubmedData.__init__-79"><a href="#PubmedData.__init__-79"><span class="linenos">79</span></a>        <span class="k">if</span> <span class="n">file_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="PubmedData.__init__-80"><a href="#PubmedData.__init__-80"><span class="linenos">80</span></a>            <span class="bp">self</span><span class="o">.</span><span class="n">_get_file_data</span><span class="p">(</span><span class="n">file_path</span><span class="p">)</span>
+</span><span id="PubmedData.__init__-81"><a href="#PubmedData.__init__-81"><span class="linenos">81</span></a>
+</span><span id="PubmedData.__init__-82"><a href="#PubmedData.__init__-82"><span class="linenos">82</span></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="PubmedData.__init__-83"><a href="#PubmedData.__init__-83"><span class="linenos">83</span></a>            <span class="n">err_msg</span> <span class="o">=</span> <span class="s2">&quot;No file or directory were provided to load PUBMED data.&quot;</span>
+</span><span id="PubmedData.__init__-84"><a href="#PubmedData.__init__-84"><span class="linenos">84</span></a>            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
 </span></pre></div>
 
 
@@ -743,6 +790,39 @@ The absolute path of the DICOM directory.</li>
             <div class="docstring"><p>Class variable corresponding to all replaced words.</p>
 </div>
 
+
+                            </div>
+                            <div id="PubmedData.articles" class="classattr">
+                                <div class="attr variable">
+            <span class="name">articles</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PubmedData.articles"></a>
+    
+    
+
+                            </div>
+                            <div id="PubmedData.authors" class="classattr">
+                                <div class="attr variable">
+            <span class="name">authors</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PubmedData.authors"></a>
+    
+    
+
+                            </div>
+                            <div id="PubmedData.keywords" class="classattr">
+                                <div class="attr variable">
+            <span class="name">keywords</span>
+
+        
+    </div>
+    <a class="headerlink" href="#PubmedData.keywords"></a>
+    
+    
 
                             </div>
                 </section>
