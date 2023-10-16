@@ -87,6 +87,12 @@ class PubmedData:
             err_msg = "No file or directory were provided to load PUBMED data."
             raise FileNotFoundError(err_msg)
 
+        # Clean up all dataframes
+        self.articles.fillna("", inplace=True)
+        self.authors.fillna("", inplace=True)
+        self.keywords.fillna("", inplace=True)
+        self.articles["TA"] = self.articles["TA"].str.replace(" ", '_')
+
     def display_wordcloud(
         self, type: str = "keyword", remove_words: str = []
     ) -> None:
@@ -122,9 +128,13 @@ class PubmedData:
         else:
             raise ValueError(f"Type {type} is not recognized.")
 
+        # Replace words
+        for old,new in self.WORDS_REPLACE.items():
+            tmp_txt = tmp_txt.replace(old, new)
+
         # Create word cloud
         display_wordcloud(
-            text=tmp_txt, remove_words=remove_words, fig_width=1000)
+            text=tmp_txt, remove_words=remove_words, fig_width=1540, fig_height=1000)
 
     def _get_file_data(self, file_path: str) -> None:
         """

@@ -60,3 +60,5 @@ def display_wordcloud(
     pyplot.imshow(wc_object, interpolation="spline36")
     pyplot.axis("off")
     pyplot.show()
+
+    print(wc_object.words_)
