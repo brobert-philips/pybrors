@@ -7,7 +7,7 @@ import copy
 import pandas
 
 # Import classes and methods
-from pybrors.utils  import GenericDir
+from pybrors.utils  import GenericDir, display_wordcloud
 from pybrors.pubmed import PubmedFile
 
 
@@ -86,6 +86,45 @@ class PubmedData:
         else:
             err_msg = "No file or directory were provided to load PUBMED data."
             raise FileNotFoundError(err_msg)
+
+    def display_wordcloud(
+        self, type: str = "keyword", remove_words: str = []
+    ) -> None:
+        """
+        The `display_wordcloud` function generates a wordcloud out of
+        bibliography database.
+
+        The wordcloud graph is built out of one of the bibliography
+        category. Several words are removed natively and additional
+        words can be removed.
+
+        Args:
+            type (str): Select the data to be used for wordcloud.
+                Values can be `keyword`, `author`, `journal`, `title`,
+                `abstract`.
+            stopwords (str): Remove words that are not relevant to the
+                visualization
+        """
+
+        # Initialize method variables
+        remove_words += list(self.WORDS_REMOVE)
+        data = {
+            "keyword" : self.keywords.MH ,
+            "author"  : self.authors.SAU,
+            "journal" : self.articles.TA ,
+            "title"   : self.articles.TI ,
+            "abstract": self.articles.AB
+        }
+
+        # Extract data to be displayed
+        if type in data.keys():
+            tmp_txt = " ".join(i for i in data[type] if len(i) > 1)
+        else:
+            raise ValueError(f"Type {type} is not recognized.")
+
+        # Create word cloud
+        display_wordcloud(
+            text=tmp_txt, remove_words=remove_words, fig_width=1000)
 
     def _get_file_data(self, file_path: str) -> None:
         """
