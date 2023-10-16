@@ -432,14 +432,9 @@ class GenericDir:
             for file in os.listdir(dir_path):
                 file_path = dir_path + os.sep + file
 
-                if os.path.isfile(file_path):   # file path
+                if file_class.test_file(file_path):   # file path
                     filelist.append(file_path)
                 elif recur:                     # recursive search
                     filelist.extend(GenericDir.list_files(file_path, recur, file_class))
-
-        else:   # path is not a file or a directory
-            err_msg = f"{dir_path} is not a file or a directory."
-            # logger.error(err_msg)
-            raise FileNotFoundError(err_msg)
 
         return filelist

@@ -89,4 +89,4 @@ class DicomData:
         # Extract all DICOM tags
         tmp_data = []
         for tmp_file_path in tmp_dir.file_list:
-            tmp_data = tmp_data.append(DicomData(file_path=tmp_file_path))
+            tmp_data.append(DicomData(file_path=tmp_file_path))

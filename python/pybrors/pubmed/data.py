@@ -7,6 +7,7 @@ import copy
 import pandas
 
 # Import classes and methods
+from pybrors.utils  import GenericDir
 from pybrors.pubmed import PubmedFile
 
 
@@ -58,7 +59,7 @@ class PubmedData:
     Class variable corresponding to all replaced words.
     """
 
-    def __init__(self, file_path: str = None) -> None:
+    def __init__(self, file_path: str = None, dir_path: str = None) -> None:
         """
         Initializes a DICOM data object.
 
@@ -74,9 +75,13 @@ class PubmedData:
         self.authors = ()
         self.keywords = ()
 
-        # Load a single DICOM file
+        # Load a single PUBMED file
         if file_path is not None:
             self._get_file_data(file_path)
+
+        # Load a PUBMED files from a directory
+        elif dir_path is not None:
+            self._get_dir_data(dir_path)
 
         else:
             err_msg = "No file or directory were provided to load PUBMED data."
@@ -98,6 +103,34 @@ class PubmedData:
         self.articles = tmp_file.articles
         self.authors  = tmp_file.authors
         self.keywords = tmp_file.keywords
+
+    def _get_dir_data(self, dir_path: str) -> None:
+        """
+        Load PUBMED directory and extract all PUBMED info.
+
+        Parameters
+        ----------
+        dir_path : str
+            The path to the directory containing the PUBMED
+            files.
+        """
+        # Get list of all files within the directory
+        tmp_dir = GenericDir(dir_path=dir_path, file_class=PubmedFile)
+
+        # Loop over all files
+        if len(tmp_dir.file_list) > 0:
+            # Load 1st PUBMED file and extract data
+            print(tmp_dir.file_list[0])
+            tmp_data = PubmedData(file_path=tmp_dir.file_list[0])
+
+            if len(tmp_dir.file_list) > 1:
+                for tmp_file_path in tmp_dir.file_list[1:]:
+                    tmp_data += PubmedData(file_path=tmp_file_path)
+
+            # Extract all data
+            self.articles = tmp_data.articles
+            self.authors  = tmp_data.authors
+            self.keywords = tmp_data.keywords
 
     def __add__(self, other):
         """Left addition of PubMedFile."""

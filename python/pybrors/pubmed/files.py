@@ -3,6 +3,7 @@ File: pubmed/files.py
 """
 
 # Import packages and submodules
+import os
 import pandas
 
 # Import classes and methods
@@ -134,6 +135,40 @@ class PubmedFile(GenericFile):
         self.articles = pandas.concat(
             [self.articles, pmid], ignore_index=True, axis=0, join="outer"
         )
+
+    @staticmethod
+    def test_file(file_path: str = None) -> bool:
+        """
+        Test if file exists, is readable and is a PUBMED supported file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to the file.
+
+        Returns
+        -------
+        bool
+            True if file exists and is writable, False otherwise.
+        """
+        # Test if file exists and is writable
+        if not GenericFile.test_file(file_path):
+            return False
+
+        # Test if file extension is "pubmed"
+        extension = os.path.splitext(file_path)[1]
+        if extension != ".pubmed":
+            return False
+
+        # Read the first 4 characters of the file
+        with open(file_path, "rt", encoding="utf8") as file:
+            first_4_chars = file.read(4)
+
+        # Check if the first 4 characters are "PMID"
+        if first_4_chars != "PMID":
+            return False
+
+        return True
 
     def _clean_text(self, text: str, keep_space: bool = True) -> str:
         """
