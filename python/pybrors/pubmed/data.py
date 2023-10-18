@@ -169,7 +169,6 @@ class PubmedData:
         # Loop over all files
         if len(tmp_dir.file_list) > 0:
             # Load 1st PUBMED file and extract data
-            print(tmp_dir.file_list[0])
             tmp_data = PubmedData(file_path=tmp_dir.file_list[0])
 
             if len(tmp_dir.file_list) > 1:
