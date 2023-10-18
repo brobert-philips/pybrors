@@ -7,7 +7,7 @@ import copy
 import pandas
 
 # Import classes and methods
-from pybrors.utils  import GenericDir, display_wordcloud
+from pybrors.utils  import GenericDir, display_wordcloud, GenericFile
 from pybrors.pubmed import PubmedFile
 
 
@@ -94,7 +94,7 @@ class PubmedData:
         self.articles["TA"] = self.articles["TA"].str.replace(" ", '_')
 
     def display_wordcloud(
-        self, type: str = "keyword", remove_words: str = []
+        self, data_type: str = "keyword", remove_words: str = None
     ) -> None:
         """
         The `display_wordcloud` function generates a wordcloud out of
@@ -111,8 +111,9 @@ class PubmedData:
             stopwords (str): Remove words that are not relevant to the
                 visualization
         """
-
         # Initialize method variables
+        if remove_words is None:
+            remove_words = []
         remove_words += list(self.WORDS_REMOVE)
         data = {
             "keyword" : self.keywords.MH ,
@@ -123,10 +124,10 @@ class PubmedData:
         }
 
         # Extract data to be displayed
-        if type in data.keys():
-            tmp_txt = " ".join(i for i in data[type] if len(i) > 1)
+        if data_type in data:
+            tmp_txt = " ".join(i for i in data[data_type] if len(i) > 1)
         else:
-            raise ValueError(f"Type {type} is not recognized.")
+            raise ValueError(f"Type {data_type} is not recognized.")
 
         # Replace words
         for old,new in self.WORDS_REPLACE.items():
@@ -135,6 +136,33 @@ class PubmedData:
         # Create word cloud
         display_wordcloud(
             text=tmp_txt, remove_words=remove_words, fig_width=1540, fig_height=1000)
+
+    def export_bibliography(self, file_path: str = None) -> None:
+        """
+        Export bibliography to Excel file.
+
+        Args:
+            file_path (str): Path to export to. If not specified a
+                dialog will be shown to the user.
+        """
+        # Test if file exists and is writable
+        if file_path is None:
+            file_path = GenericFile.dialog_select_file(
+                dir_path=self.dir_path,
+                func="save",
+                opt="Excel file (*.xlsx)"
+            )
+        else:
+            if not GenericFile.test_file(file_path):
+                raise FileNotFoundError(f"{file_path} was not found.")
+
+        # Save bibliography databases
+        writer = pandas.ExcelWriter(file_path, engine="xlsxwriter")
+        self.articles.to_excel(writer, sheet_name="articles", index=False)
+        self.authors.to_excel(writer, sheet_name="authors", index=False)
+        self.keywords.to_excel(writer, sheet_name="keywords",index=False)
+        writer.close()
+        print(f"DB was saved to {file_path}")
 
     def _get_file_data(self, file_path: str) -> None:
         """
@@ -152,6 +180,9 @@ class PubmedData:
         self.articles = tmp_file.articles
         self.authors  = tmp_file.authors
         self.keywords = tmp_file.keywords
+
+        # Extract directory information
+        self.dir_path = tmp_file.file_dir
 
     def _get_dir_data(self, dir_path: str) -> None:
         """
@@ -179,6 +210,9 @@ class PubmedData:
             self.articles = tmp_data.articles
             self.authors  = tmp_data.authors
             self.keywords = tmp_data.keywords
+
+        # Extract directory information
+        self.dir_path = tmp_dir.dir_path
 
     def __add__(self, other):
         """Left addition of PubMedFile."""

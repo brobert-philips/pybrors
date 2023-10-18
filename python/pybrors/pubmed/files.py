@@ -33,7 +33,7 @@ class PubmedFile(GenericFile):
     Class variable corresponding to all extracted fields for articles db.
     """
 
-    TAGS_AUTHOR  = ["PMID", "SAU", "FAU"]
+    TAGS_AUTHOR  = ["PMID", "SAU", "FAU", "AD"]
     """
     Class variable corresponding to all extracted fields for authors db.
     """
@@ -77,6 +77,7 @@ class PubmedFile(GenericFile):
         mesh       = {}
         pmid       = {}
         collect_ab = False
+        collect_ad = False
 
         # Open PubMed file and extract publication info
         with open(self.file_path, "r", encoding = "utf8") as file:
@@ -85,7 +86,7 @@ class PubmedFile(GenericFile):
                 tag  = line[:4].strip()
                 line = line[5:].strip()
 
-                # Add new entry in _articles
+                # Add new entry in articles
                 if tag == "PMID":
                     if pmid:    # add entry to articles dataframe
                         pmid = pandas.DataFrame(data=pmid, index=[0])
@@ -99,20 +100,24 @@ class PubmedFile(GenericFile):
                     pmid[tag] = self._clean_text(text=line)
                     collect_ab = True if tag == "AB" else False
 
-                # Add new entry to _authors
+                # Add new entry in authors
                 elif tag == "FAU":
-                    # Reformat author line
-                    short_name = self._clean_text(
-                        text=line[:line.find(",")], keep_space=False
-                    )
+                    if author:    # add entry to authors dataframe
+                        author["SAU"] = self._clean_text(
+                            text=author["FAU"][:author["FAU"].find(",")],
+                            keep_space=False
+                        )
+                        author["PMID"] = pmid["PMID"]
+                        author = pandas.DataFrame(data=author, index=[0])
+                        self.authors = pandas.concat(
+                            [self.authors, author], ignore_index=True,
+                            axis=0, join="outer"
+                        )
+                    author = {tag:line}   # initialize new entry
 
-                    # Add new author entry
-                    author = {"PMID":pmid["PMID"], "SAU":short_name, "FAU":line}
-                    author = pandas.DataFrame(data=author, index=[0])
-                    self.authors = pandas.concat(
-                        [self.authors, author], ignore_index=True,
-                        axis=0, join="outer"
-                    )
+                elif tag in self.authors.columns:
+                    author[tag] = self._clean_text(text=line)
+                    collect_ad = True if tag == "AD" else False
 
                 # Add new entry to keywords
                 elif tag == "MH":
@@ -127,8 +132,12 @@ class PubmedFile(GenericFile):
                 elif collect_ab and not tag:
                     pmid["AB"] += self._clean_text(line)
 
+                elif collect_ad and not tag:
+                    author["AD"] += self._clean_text(line)
+
                 else:
                     collect_ab = False
+                    collect_ad = False
 
         # Add last article and clean up data
         pmid = pandas.DataFrame(data=pmid, index=[0])
