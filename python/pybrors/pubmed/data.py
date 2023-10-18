@@ -4,6 +4,7 @@ File: pubmed/data.py
 
 # Import packages and submodules
 import copy
+import os
 import pandas
 
 # Import classes and methods
@@ -59,7 +60,12 @@ class PubmedData:
     Class variable corresponding to all replaced words.
     """
 
-    def __init__(self, file_path: str = None, dir_path: str = None) -> None:
+    def __init__(
+        self,
+        file_path: str = None,
+        dir_path: str = None,
+        bib_path: str = None
+    ) -> None:
         """
         Initializes a DICOM data object.
 
@@ -69,6 +75,8 @@ class PubmedData:
             The absolute path of the DICOM file.
         dir_path : str
             The absolute path of the DICOM directory.
+        bib_path : str
+            The absolute path of the bibliography file (Excel file).
         """
         # Initialize class attributes
         self.articles = ()
@@ -82,6 +90,25 @@ class PubmedData:
         # Load a PUBMED files from a directory
         elif dir_path is not None:
             self._get_dir_data(dir_path)
+
+        elif bib_path is not None:
+            try:
+                data = pandas.read_excel(
+                    io=bib_path,
+                    sheet_name=["articles", "authors", "keywords"]
+                )
+            except pandas.errors.EmptyDataError:
+                print("The file is empty.")
+            except pandas.errors.ParserError:
+                print("The file is not a valid Excel file.")
+            except FileNotFoundError:
+                print("The file does not exist.")
+            else:
+                # Convert the sheets into separate DataFrame instances
+                self.articles = data["articles"]
+                self.authors  = data["authors"]
+                self.keywords = data["keywords"]
+                self.dir_path = os.path.dirname(bib_path)
 
         else:
             err_msg = "No file or directory were provided to load PUBMED data."
