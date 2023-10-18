@@ -1,6 +1,4 @@
-"""
-File: utils/plotdata.py
-"""
+# File: utils/plotdata.py
 
 # Import packages and submodules
 import re

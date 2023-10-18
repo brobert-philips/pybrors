@@ -1,5 +1,7 @@
+# File: pubmed/__init__.py
 """
-File: pubmed/__init__.py
+`pybrors.pubmed` gathers classes and methods which are used to process
+data extracted from PUBMED database.
 """
 
 # Declare all submodules, classes and methods from pybrors.pubmed submodule

@@ -1,6 +1,4 @@
-"""
-File: dicom/data.py
-"""
+# File: dicom/data.py
 
 # Import packages and submodules
 

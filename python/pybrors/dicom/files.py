@@ -1,6 +1,4 @@
-"""
-File: dicom/files.py
-"""
+# File: dicom/files.py
 
 # Import packages and submodules
 import copy

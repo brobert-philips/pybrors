@@ -1,5 +1,6 @@
+# File: __init__.py
 """
-File: __init__.py
+.. include:: ../../README.md
 """
 
 # Declare all submodules, classes and methods from pybro.utils submodule

@@ -1,6 +1,4 @@
-"""
-File: utils/files.py
-"""
+# File: utils/files.py
 
 # Import packages and submodules
 import os

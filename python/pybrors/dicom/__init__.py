@@ -1,5 +1,7 @@
+# File: dicom/__init__.py
 """
-File: dicom/__init__.py
+`pybrors.pubmed` gathers classes and methods which are used to process
+DICOM data.
 """
 
 # Declare all submodules, classes and methods from pybrors.dicom submodule

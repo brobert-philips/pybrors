@@ -1,6 +1,4 @@
-"""
-File: pubmed/data.py
-"""
+# File: pubmed/data.py
 
 # Import packages and submodules
 import copy

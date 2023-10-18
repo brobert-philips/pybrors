@@ -1,6 +1,4 @@
-"""
-File: pubmed/files.py
-"""
+# File: pubmed/files.py
 
 # Import packages and submodules
 import os
