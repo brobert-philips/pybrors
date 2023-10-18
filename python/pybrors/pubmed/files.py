@@ -197,12 +197,16 @@ class PubmedFile(GenericFile):
         can substitute spaces by `_`. The returned string is lower
         case.
 
-        Args:
-            text (str): Indicate the text to be cleaned.
-            keep_space (bool): Keep the spaces in the text or not.
-                Default value is True
+        Parameters
+        ----------
+        text : str
+            Indicate the text to be cleaned.
+        keep_space : bool
+            Keep the spaces in the text or not. Default value is True.
 
-        Returns:
+        Returns
+        -------
+        str
             The text in lower cases, substitutes groups of words by
             acronyms and replaces spaces by underscores
         """

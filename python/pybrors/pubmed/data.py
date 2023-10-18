@@ -115,9 +115,9 @@ class PubmedData:
             raise FileNotFoundError(err_msg)
 
         # Clean up all dataframes
-        self.articles.fillna("", inplace=True)
-        self.authors.fillna("", inplace=True)
-        self.keywords.fillna("", inplace=True)
+        self.articles.fillna(" ", inplace=True)
+        self.authors.fillna(" ", inplace=True)
+        self.keywords.fillna(" ", inplace=True)
         self.articles["TA"] = self.articles["TA"].str.replace(" ", '_')
 
     def display_wordcloud(
@@ -131,12 +131,13 @@ class PubmedData:
         category. Several words are removed natively and additional
         words can be removed.
 
-        Args:
-            type (str): Select the data to be used for wordcloud.
-                Values can be `keyword`, `author`, `journal`, `title`,
-                `abstract`.
-            stopwords (str): Remove words that are not relevant to the
-                visualization
+        Parameters
+        ----------
+        data_type : str
+            Select the data to be used for wordcloud. Values can be
+            `keyword`, `author`, `journal`, `title`, `abstract`.
+        stopwords : list[str]
+            Remove words that are not relevant to the visualization.
         """
         # Initialize method variables
         if remove_words is None:
