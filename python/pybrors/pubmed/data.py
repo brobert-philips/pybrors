@@ -37,8 +37,8 @@ class PubmedData:
     """
 
     WORDS_REPLACE = {
-        "à": "a", "â": "a", "é": "e", "è": "e", "ê": "e", "ô": "o", "ö": "o",
-        "ù": "u", "û": "u",
+        "à": "a", "â": "a", "á": "a", "é": "e", "è": "e", "ê": "e", "ô": "o", "ö": "o",
+        "ù": "u", "û": "u", "ú": "u", "ñ": "n",
         "computed tomography": "ct", "tomography, x-ray computed": "ct",
         "magnetic resonance imaging": "mri", "magnetic resonance": "mri",
         "mr ": "mri ", "mrs": "spectroscopy",
@@ -51,7 +51,7 @@ class PubmedData:
         "procedures": "procedure",
         "studies": "study",
         "tissues": "tissue", "trends": "trend",
-        "ies ": "y ",
+        "ies ": "y ", "vs": "versus",
         "-": "_", "/": " ", "*": " ", ",": " ", "&": " ", "=": " ", ">": " ",
         "<": " ", ".": " "
     }
@@ -157,7 +157,7 @@ class PubmedData:
                 raise FileNotFoundError(f"{file_path} was not found.")
 
         # Save bibliography databases
-        writer = pandas.ExcelWriter(file_path, engine="xlsxwriter")
+        writer = pandas.ExcelWriter(file_path, engine="xlsxwriter") # pylint: disable=abstract-class-instantiated
         self.articles.to_excel(writer, sheet_name="articles", index=False)
         self.authors.to_excel(writer, sheet_name="authors", index=False)
         self.keywords.to_excel(writer, sheet_name="keywords",index=False)

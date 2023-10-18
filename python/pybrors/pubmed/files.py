@@ -96,10 +96,6 @@ class PubmedFile(GenericFile):
                         )
                     pmid = {tag:line}   # initialize new entry
 
-                elif tag in self.articles.columns:
-                    pmid[tag] = self._clean_text(text=line)
-                    collect_ab = True if tag == "AB" else False
-
                 # Add new entry in authors
                 elif tag == "FAU":
                     if author:    # add entry to authors dataframe
@@ -115,10 +111,6 @@ class PubmedFile(GenericFile):
                         )
                     author = {tag:line}   # initialize new entry
 
-                elif tag in self.authors.columns:
-                    author[tag] = self._clean_text(text=line)
-                    collect_ad = True if tag == "AD" else False
-
                 # Add new entry to keywords
                 elif tag == "MH":
                     mesh = {"PMID":pmid["PMID"], "MH":self._clean_text(line)}
@@ -128,7 +120,15 @@ class PubmedFile(GenericFile):
                         axis=0, join="outer"
                     )
 
-                # Collect abstract
+                # Extract tags according to specific conditions
+                elif tag in self.articles.columns:
+                    pmid[tag] = self._clean_text(text=line)
+                    collect_ab = tag == "AB"
+
+                elif tag in self.authors.columns:
+                    author[tag] = self._clean_text(text=line)
+                    collect_ad = tag == "AD"
+
                 elif collect_ab and not tag:
                     pmid["AB"] += self._clean_text(line)
 
@@ -143,6 +143,16 @@ class PubmedFile(GenericFile):
         pmid = pandas.DataFrame(data=pmid, index=[0])
         self.articles = pandas.concat(
             [self.articles, pmid], ignore_index=True, axis=0, join="outer"
+        )
+
+        # Add last author and clean up data
+        author["SAU"] = self._clean_text(
+            text=author["FAU"][:author["FAU"].find(",")], keep_space=False
+        )
+        author["PMID"] = pmid["PMID"]
+        author = pandas.DataFrame(data=author, index=[0])
+        self.authors = pandas.concat(
+            [self.authors, author], ignore_index=True, axis=0, join="outer"
         )
 
     @staticmethod
