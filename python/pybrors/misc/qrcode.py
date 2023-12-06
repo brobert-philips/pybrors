@@ -6,6 +6,7 @@ import qrcode.image.svg
 
 # Import classes and methods
 from PIL import Image
+from pybrors.utils  import GenericFile
 
 class QRcode:
     """
@@ -61,9 +62,11 @@ class QRcode:
         """
         # Check if logo should be selected of if it is provided
         if file_path is None:
-            return None
+            file_path = GenericFile.dialog_select_file(
+                opt="JPG file (*.jpg *.jpeg);;PNG file (*.png)"
+            )
 
-        self.logo = file_path
+        self.logo = Image.open(file_path)
 
     def save_png(self, file_path: str = None, color: str = "#000000") -> None:
         """
@@ -82,13 +85,17 @@ class QRcode:
         img = self.qrcode.make_image(fill_color=color, back_color="white")
 
         # Add logo to qrcode
-        logo      = Image.open(self.logo)
-        basewidth = 250
-        wpercent  = basewidth / float(logo.size[0])
-        hsize     = int((float(logo.size[1]) * float(wpercent)))
-        logo      = logo.resize((basewidth, hsize), Image.LANCZOS)
-        pos       = ((img.size[0] - logo.size[0])//2, (img.size[1] - logo.size[1])//2)
-        img.paste(logo, pos)
+        if self.logo is not None:
+            bwidth   = 250
+            wpercent = bwidth / float(self.logo.size[0])
+            hsize    = int((float(self.logo.size[1]) * float(wpercent)))
+            logo     = self.logo.resize((bwidth, hsize), Image.LANCZOS)
+            pos      = (
+                (img.size[0] - logo.size[0]) // 2,
+                (img.size[1] - logo.size[1]) // 2
+            )
+
+            img.paste(logo, pos)
 
         # Save qrcode
         img.save(file_path)
