@@ -1,6 +1,7 @@
 # File: dicom/data.py
 
 # Import packages and submodules
+import numpy
 
 # Import classes and methods
 from pybrors.dicom import DicomFile, DicomDir
@@ -8,7 +9,7 @@ from pybrors.dicom import DicomFile, DicomDir
 
 class DicomData:
     """
-    DICOM file class inheriting from GenericFile.
+    DICOM data object containing 2D or 3D image.
 
     Attributes
     ----------
@@ -86,5 +87,13 @@ class DicomData:
 
         # Extract all DICOM tags
         tmp_data = []
+        tmp_img  = []
         for tmp_file_path in tmp_dir.file_list:
             tmp_data.append(DicomData(file_path=tmp_file_path))
+
+        # Build DICOM dataset out of all DICOM files
+        self.dataset = tmp_data[0].dataset
+
+        # Build 3D volume out of all DICOM files
+        tmp_img   = [tmp_data[i].dataset.pixel_array for i in range(len(tmp_data))]
+        self.data = numpy.dstack(tmp_img)
