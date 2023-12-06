@@ -36,8 +36,8 @@ class PubmedData:
     """
 
     WORDS_REPLACE = {
-        "à": "a", "â": "a", "á": "a", "é": "e", "è": "e", "ê": "e", "ô": "o", "ö": "o",
-        "ù": "u", "û": "u", "ú": "u", "ñ": "n",
+        "à": "a", "â": "a", "á": "a", "é": "e", "è": "e", "ê": "e", "ë": "e", "ô": "o",
+        "ö": "o", "ù": "u", "û": "u", "ú": "u", "ñ": "n",
         "computed tomography": "ct", "tomography, x-ray computed": "ct",
         "magnetic resonance imaging": "mri", "magnetic resonance": "mri",
         "mr ": "mri ", "mrs": "spectroscopy",

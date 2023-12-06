@@ -14,7 +14,8 @@ import pandas
 import pydicom
 
 # Import classes and methods
-from pybrors.utils import GenericFile, GenericDir
+from pybrors        import rust_lib
+from pybrors.utils  import GenericFile, GenericDir
 
 
 TAGS_CLEARED = [
@@ -433,9 +434,14 @@ class DicomDir(GenericDir):
             os.makedirs(new_path)
 
         # Anonymize DICOM files
-        for file_path in self.file_list:
-            dicom_file = DicomFile(file_path)
-            if not dicom_file.anonymize(new_dir_path=new_path):
-                return False
-        print("Anonymized %i DICOM files.", len(self.file_list))
-        return True
+        # for file_path in self.file_list:
+        #     dicom_file = DicomFile(file_path)
+        #     if not dicom_file.anonymize(new_dir_path=new_path):
+        #         return False
+        # print("Anonymized %i DICOM files.", len(self.file_list))
+        # return True
+
+        # Anonymize DICOM dir
+        if rust_lib.anonymize_dicomdir(self.file_list, new_path):
+            return True
+        return False
