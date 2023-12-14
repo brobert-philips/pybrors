@@ -151,8 +151,10 @@ class SbiFile(DicomFile):
         Export the exponential maps.
         """
 
-        # Generate exponential maps
-        exp_maps = self.generate_exponential()
+        # Generate exponential maps and rescale values
+        rescale_slope = self.dataset.RescaleSlope
+        rescale_intercept = self.dataset.RescaleIntercept
+        exp_maps = (self.generate_exponential() - rescale_intercept) / rescale_slope
         ext = self.file_ext
 
         # Copy DICOM dataset to export mu_0 map
@@ -169,15 +171,16 @@ class SbiFile(DicomFile):
         mu_inf["ImageType"].value[2] = "MUINF"
         mu_inf.Rows = exp_maps.shape[0]
         mu_inf.Columns = exp_maps.shape[1]
-        mu_inf.PixelData = exp_maps[:,:,1].astype(numpy.float16)
+        mu_inf.PixelData = exp_maps[:,:,1].astype(numpy.float16).tobytes()
         new_path = self.file_path.replace(ext, f"_muinf{ext}")
         mu_inf.save_as(new_path)
 
         # Copy DICOM dataset to export e_c map
+
         e_c = deepcopy(self.dataset)
         e_c["ImageType"].value[2] = "EC"
         e_c.Rows = exp_maps.shape[0]
         e_c.Columns = exp_maps.shape[1]
-        e_c.PixelData = exp_maps[:,:,2].astype(numpy.float16)
+        e_c.PixelData = (10*exp_maps[:,:,2]).astype(numpy.float16).tobytes()
         new_path = self.file_path.replace(ext, f"_ec{ext}")
         e_c.save_as(new_path)
