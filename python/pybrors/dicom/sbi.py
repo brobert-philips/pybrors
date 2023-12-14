@@ -9,6 +9,7 @@ import sys
 from os.path import dirname, join, abspath
 from ctypes import c_uint16, c_int32
 from scipy.optimize import curve_fit
+from copy import deepcopy
 
 # Import packages and submodules
 import numpy
@@ -144,3 +145,39 @@ class SbiFile(DicomFile):
                     exponential_map[i,j,:] = [tmp_mu, tmp_mu, 0]
 
         return exponential_map
+
+    def export_exp_maps(self) -> None:
+        """
+        Export the exponential maps.
+        """
+
+        # Generate exponential maps
+        exp_maps = self.generate_exponential()
+        ext = self.file_ext
+
+        # Copy DICOM dataset to export mu_0 map
+        mu_0 = deepcopy(self.dataset)
+        mu_0["ImageType"].value[2] = "MU0"
+        mu_0.Rows = exp_maps.shape[0]
+        mu_0.Columns = exp_maps.shape[1]
+        mu_0.PixelData = exp_maps[:,:,0].astype(numpy.float16).tobytes()
+        new_path = self.file_path.replace(ext, f"_mu0{ext}")
+        mu_0.save_as(new_path)
+
+        # Copy DICOM dataset to export mu_inf map
+        mu_inf = deepcopy(self.dataset)
+        mu_inf["ImageType"].value[2] = "MUINF"
+        mu_inf.Rows = exp_maps.shape[0]
+        mu_inf.Columns = exp_maps.shape[1]
+        mu_inf.PixelData = exp_maps[:,:,1].astype(numpy.float16)
+        new_path = self.file_path.replace(ext, f"_muinf{ext}")
+        mu_inf.save_as(new_path)
+
+        # Copy DICOM dataset to export e_c map
+        e_c = deepcopy(self.dataset)
+        e_c["ImageType"].value[2] = "EC"
+        e_c.Rows = exp_maps.shape[0]
+        e_c.Columns = exp_maps.shape[1]
+        e_c.PixelData = exp_maps[:,:,2].astype(numpy.float16)
+        new_path = self.file_path.replace(ext, f"_ec{ext}")
+        e_c.save_as(new_path)
