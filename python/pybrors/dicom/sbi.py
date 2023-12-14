@@ -1,5 +1,6 @@
 # File: dicom/sbi.py
 # TODO: create a plugin localization and validation
+# TODO: create a save exponential maps
 
 # Import packages and submodules
 import sys
@@ -23,8 +24,45 @@ from .files import DicomFile
 
 
 class SbiFile(DicomFile):
+    """
+    A class representing an SBI file.
+
+    Inherits from the DicomFile class.
+
+    Attributes
+    ----------
+    FILE_TYPES : dict[str, str]
+        The supported file extensions and their descriptions.
+    file_path : str
+        The absolute path of the file.
+    file_name : str
+        The name of the file.
+    file_ext : str
+        The extension of the file.
+    file_dir : str
+        The directory containing the file.
+    dataset : pydicom.dataset.FileDataset
+        The DICOM dataset of the file.
+    """
 
     def __init__(self, file_path: str = None) -> None:
+        """
+        Initializes the object.
+
+        Parameters
+        ----------
+        file_path : str
+            The path to the file. Defaults to None.
+
+        Raises
+        ------
+        ValueError
+            If the file is not an SBI file or if the SBI file could not be
+            initialized.
+
+        Returns:
+            None
+        """
 
         # Initialize parent attributes
         super().__init__(file_path)
@@ -36,6 +74,24 @@ class SbiFile(DicomFile):
             raise ValueError("SBI file could not be initialized.")
 
     def generate_monoe(self, energy: int = 70) -> numpy.ndarray:
+        """
+        Generate a MonoE image using the given energy value.
+
+        Parameters
+        ----------
+        energy : int
+            The energy value for the MonoE image. Defaults to 70.
+
+        Returns
+        -------
+        numpy.ndarray
+            The MonoE image as a numpy array.
+
+        Raises
+        ------
+        ValueError
+            If the MonoE image could not be generated.
+        """
 
         # Allocate data for results
         msize = SRTK.GetMatrixSize ()
@@ -52,6 +108,15 @@ class SbiFile(DicomFile):
             raise ValueError("MonoE image could not be generated.")
 
     def generate_exponential(self) -> numpy.ndarray:
+        """
+        Generate an exponential map using MonoE maps from 40 keV to 190
+        keV.
+
+        Returns
+    	-------
+    	numpy.ndarray
+    	    The exponential map with shape [num_rows, num_columns, 3].
+    	"""
 
         # Generate MonoE maps form 40 keV to 190 keV
         energy_range = numpy.arange(40, 200, 10)
@@ -59,8 +124,8 @@ class SbiFile(DicomFile):
         monoe_stack = numpy.stack(monoe_stack, axis=2)
 
         # Define exponential model
-        def exponential_model(E, mu_0, mu_inf, E_C):
-            return (mu_0 - mu_inf) * numpy.exp(-E / E_C) + mu_inf
+        def exponential_model(energy, mu_0, mu_inf, e_c):
+            return (mu_0 - mu_inf) * numpy.exp(-energy / e_c) + mu_inf
 
         # Exponential fit voxel by voxel
         exponential_map = numpy.zeros([monoe_stack.shape[0], monoe_stack.shape[1], 3])
