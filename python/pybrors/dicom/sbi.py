@@ -120,8 +120,12 @@ class SbiFile(DicomFile):
     	"""
 
         # Generate MonoE maps form 40 keV to 190 keV
-        energy_range = numpy.arange(40, 200, 10)
-        monoe_stack = [self.generate_monoe(energy) for energy in energy_range]
+        energy_range = numpy.arange(40., 60., 1.)
+        energy_range = numpy.concatenate((energy_range, numpy.arange(60., 80., 2.)))
+        energy_range = numpy.concatenate((energy_range, numpy.arange(80., 120., 5.)))
+        energy_range = numpy.concatenate((energy_range, numpy.arange(120., 200., 10.)))
+        # energy_range = numpy.arange(40, 200, 10)
+        monoe_stack = [self.generate_monoe(int(energy)) for energy in energy_range]
         monoe_stack = numpy.stack(monoe_stack, axis=2)
 
         # Define exponential model
@@ -131,6 +135,7 @@ class SbiFile(DicomFile):
         # Exponential fit voxel by voxel
         exponential_map = numpy.zeros([monoe_stack.shape[0], monoe_stack.shape[1], 3])
         std_threshold = numpy.max(monoe_stack) * 0.01
+        initial_guess = [2000., 200., 20.]
         for i in range(monoe_stack.shape[0]):
             for j in range(monoe_stack.shape[1]):
                 tmp_std = numpy.std(monoe_stack[i,j,:])
@@ -138,7 +143,8 @@ class SbiFile(DicomFile):
                     exponential_map[i,j,:], _ = curve_fit(
                         exponential_model,
                         energy_range,
-                        monoe_stack[i,j,:]
+                        monoe_stack[i,j,:],
+                        initial_guess,
                     )
                 else:
                     tmp_mu = numpy.mean(monoe_stack[i,j,:])
